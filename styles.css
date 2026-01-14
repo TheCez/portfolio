@@ -351,27 +351,80 @@ a:hover {
 .hero-content {
   text-align: center;
   z-index: 2;
-  max-width: 800px;
+  max-width: 900px;
   position: relative;
+  padding: 0 20px;
 }
 
-.hero-subtitle {
-  font-size: var(--font-size-lg);
-  color: var(--accent-light);
-  font-weight: 600;
-  margin-bottom: var(--spacing-sm);
-  font-family: var(--font-mono);
+/* Subtle backlit glow behind the title */
+.hero-glow {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 150px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Violet glow - uniform across full text width */
+.hero-glow::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 850px;
+  height: 100px;
+  /* Uniform color across the entire width */
+  background: rgba(139, 92, 246, 0.3);
+  filter: blur(45px);
+}
+
+/* Blue undertone glow - also uniform */
+.hero-glow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 900px;
+  height: 140px;
+  background: rgba(99, 102, 241, 0.15);
+  filter: blur(55px);
 }
 
 .hero-title {
-  font-size: clamp(2.5rem, 8vw, 5rem);
-  margin-bottom: var(--spacing-md);
+  font-size: clamp(3.5rem, 12vw, 7rem);
+  margin-bottom: var(--spacing-sm);
   animation: fadeInUp 1s ease;
+  color: white;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  position: relative;
+  z-index: 1;
+  /* Subtle purple/blue glow around each letter */
+  text-shadow:
+    0 0 20px rgba(139, 92, 246, 0.25),
+    0 0 40px rgba(99, 102, 241, 0.15);
 }
 
-.hero-description {
-  font-size: var(--font-size-xl);
-  color: var(--text-secondary);
+.hero-subtitle-role {
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
+  margin-bottom: var(--spacing-md);
+  animation: fadeInUp 1s ease 0.1s;
+  animation-fill-mode: backwards;
+}
+
+.hero-specializations {
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  color: rgba(255, 255, 255, 0.7);
   margin-bottom: var(--spacing-xl);
   animation: fadeInUp 1s ease 0.2s;
   animation-fill-mode: backwards;
@@ -381,8 +434,46 @@ a:hover {
   display: flex;
   gap: var(--spacing-md);
   justify-content: center;
-  animation: fadeInUp 1s ease 0.4s;
+  animation: fadeInUp 1s ease 0.3s;
   animation-fill-mode: backwards;
+}
+
+/* Solid purple button */
+.btn-primary {
+  background: #8b5cf6;
+  color: white;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+  color: white;
+}
+
+/* Outlined ghost button */
+.btn-outline {
+  background: transparent;
+  color: white;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: white;
+  transform: translateY(-2px);
+  color: white;
 }
 
 .scroll-indicator {
@@ -396,7 +487,7 @@ a:hover {
 .scroll-indicator svg {
   width: 30px;
   height: 30px;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* === ABOUT SECTION === */
