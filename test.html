@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .test-box {
+            margin: 50px auto;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin: 0 0 20px 0;
+        }
+
+        .info {
+            background: rgba(99, 102, 241, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="test-box">
+        <h1>🎨 Browser Compatibility Test</h1>
+        <p>This page tests if your browser supports the required features:</p>
+
+        <div class="info">
+            <p><strong>Backdrop Filter Support:</strong> <span id="backdrop-support"></span></p>
+            <p><strong>Canvas Support:</strong> <span id="canvas-support"></span></p>
+            <p><strong>JavaScript Running:</strong> <span id="js-support"></span></p>
+            <p><strong>Particles Rendered:</strong> <span id="particles-support"></span></p>
+        </div>
+
+        <p style="margin-top: 20px;">If you see animated blue/purple dots moving in the background, the particle system
+            is working!</p>
+        <p>If this box has a frosted glass effect, backdrop-filter is supported.</p>
+    </div>
+
+    <script>
+        // Check support
+        document.getElementById('js-support').textContent = '✅ Yes';
+
+        // Check Canvas
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        document.getElementById('canvas-support').textContent = canvas && ctx ? '✅ Yes' : '❌ No';
+
+        // Check backdrop-filter
+        const testDiv = document.createElement('div');
+        testDiv.style.backdropFilter = 'blur(10px)';
+        const supportsBackdrop = testDiv.style.backdropFilter !== '';
+        document.getElementById('backdrop-support').textContent = supportsBackdrop ? '✅ Yes' : '❌ No (try Chrome/Edge)';
+
+        // Initialize particle system
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = 50;
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 1,
+                vy: (Math.random() - 0.5) * 1,
+                radius: Math.random() * 3 + 1
+            });
+        }
+
+        let particlesRendered = false;
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => {
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+
+                if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+                if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(99, 102, 241, 0.8)';
+                ctx.fill();
+
+                particlesRendered = true;
+            });
+
+            // Draw connections
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(99, 102, 241, ${0.3 * (1 - distance / 150)})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        setTimeout(() => {
+            document.getElementById('particles-support').textContent = particlesRendered ? '✅ Yes' : '❌ No';
+        }, 1000);
+
+        console.log('Debug test loaded!');
+        console.log('Check if you can see animated particles in the background.');
+    </script>
+</body>
+
+</html>
