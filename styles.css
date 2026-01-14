@@ -296,13 +296,18 @@ a:hover {
 
 .nav-logo {
   font-size: var(--font-size-xl);
-  font-weight: 800;
+  font-weight: 300;
+  /* Much thinner font */
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   padding: 6px 12px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
+  background: transparent;
+  /* No background */
+  letter-spacing: 1px;
 }
+
+
 
 .nav-links {
   display: flex;
