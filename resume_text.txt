@@ -1,0 +1,105 @@
+AJAY A. CHODANKAR
+Curriculum Vitae
+@Email, ajaychodankar15@gmail.com ♂phonePhone, +49 176 764 66955 /linkedinajay-chodankar
+/envel⌢peAddress, Braunschweig, 38106 Germany ♂¶ap-¶arkerLocation, Germany /githubTheCez
+EDUCATIONAL BACKGROUND
+10.2022 – Ongoing ∙Master Data Science
+TU Braunschweig
+♂¶ap-¶arkerBraunschweig, Germany
+Final Grade:1.9
+Thesis:Computation and Validation of Occupancy Grids for Solving
+Traﬃc Conﬂicts in Multi-vehicle Trajectory Planning.
+05.2018 – 03.2022 ∙B.E. Computer Engineering
+University of Mumbai
+♂¶ap-¶arkerMumbai, India
+Final Grade:1.6
+PROFESSIONAL EXPERIENCE
+06.2024 – Ongoing ∙Wissenschaftliche Hilfskraft - AI Researcher
+IKE - Institut für Konstruktives Entwerfen, Industrie- und Gesundheitsbau
+♂¶ap-¶arkerBraunschweig, Germany
+•Developed Python-based backends and scalable RAG pipelines on Microsoft Azure, inte-
+grating vector embeddings to serve proprietary data to AI models.
+•Engineered Agentic, multimodal AI systems using CrewAI/LangChain, orchestrating au-
+tonomous agents to execute complex workﬂows (e.g., translation) with minimal human
+intervention.
+•Built Multimodal AI solutions leveraging Vision Language Models (VLM) and Computer
+Vision for automated object identiﬁcation and analysis.
+•Implemented real-time Audio Processing pipelines using OpenAI Whisper (STT) and TTS
+models, enabling voice-driven interactions.
+•Applied advanced Prompt Engineering techniques to optimize LLM outputs and ensured
+Clean Code structure across all AI services.
+04.2024 – Ongoing ∙Wissenschaftliche Hilfskraft- System Administrator
+IFAS - Institut für Flugantriebe und Strömungsmaschinen
+♂¶ap-¶arkerBraunschweig, Germany
+•Developed complex Python scripts to automate critical system administration tasks, signif-
+icantly reducing manual maintenance time.
+•Implemented Infrastructure as Code (IaC) using Ansible to automate system setup and en-
+sure consistent, reproducible environments.
+•Managed and maintained Linux-based infrastructure, ensuring high availability for research
+computing resources.
+01.2019 – 05.2022 ∙Autonomous Driving Subsystem Member
+VCET Solecthon (Autonomous Solar Vehicle R&D)
+♂¶ap-¶arkerMumbai, India
+•Pioneered the development of a modular Autonomous Driving System, designing a "plug-
+and-play" architecture for rapid sensor integration.
+•Implemented real-time Computer Vision pipelines using YOLO (Deep Learning) to detect
+objects and navigate dynamic environments.
+
+01.2019 – 05.2022
+•Programmed and optimized low-latency algorithms on Nvidia Jetson and Raspberry Pi,
+ensuring eﬃcient execution on edge hardware.
+STRENGTHS AND SKILLS
+Analytical Thinking Adaptability Eye for detail Academic Research Coordination
+AI & Generative AI:
+Agentic AI Systems LLMs (GPT-4, Gemini) RAG (Retrieval-Augmented Generation) Embeddings
+Multimodality (Text-to-Image/Audio) VLM (Vision Language Models) Prompt Engineering (Chain-of-Thought)
+Frameworks & Libraries:
+PyTorch OpenCV Pandas NumPy Computer Vision(YOLO)
+Backend & Engineering:
+Python (Expert) RESTful API Design Microservices Clean Code Principles Unit Testing
+Cloud & DevOps:
+Microsoft Azure (Pipelines, Deployment) Docker (Containerization) Git (Versioning & CI/CD) SQL Ansible
+Domain Knowledge:
+3D Environment Analysis Computer Vision CAD/IFC Autonomoous Driving
+PROJECTS
+Agentic AI for Medical Data Simpliﬁcation
+Creating a patient’s report. This report simpliﬁes and summarizes a patient’s condition and prescriptions in clear, concise
+terms to help them better understand their health and commit to their treatment. We used AI to generate this simpliﬁed
+summary from the doctor’s report.
+•Architected a robust RAG (Retrieval-Augmented Generation) system to ensure all facts are grounded in the original
+source data.
+•Engineered a multi-agent AI system using CrewAI to autonomously manage summarization, translation, and simpliﬁca-
+tion workﬂows.
+•Deployed the service using the Google Gemini API and optimized the pipeline for real-time performance.
+Image-to-BIM Generative AI Pipeline
+•Architected an end-to-end Generative AI pipeline that transforms 2D architectural images into 3D CAD-ready models
+using Multimodal Large Language Models.
+•Engineered an Agentic AI workﬂow to autonomously interpret structural features and generate procedural Three.js
+code for real-time web visualization.
+•Built a FastAPI microservice to orchestrate the conversion of web-based models into Industry Foundation Classes
+(IFC), ensuring interoperability with professional BIM software.
+ACHIEVEMENTS
+Ἴ6Solves a BIG AEC Problem
+AEC Hackathon Munich 2024
+Ἴ6Best LLM Idea
+Healthcare Hackathon 2024 held in Berlin
+(UKSH)
+Ἴ6Winner Rank 1
+HealthHack 2024 held in Braunschweig
+Ἴ6All India Rank 2
+SAUR URJA VEHICLE CHALLENGE 2022 held
+in India.
+/heartbeatAZ-900: Microsoft Azure Fundamentals
+Awarded by Microsoft Certiﬁcation.PUBLICATIONS
+/usersConference Proceedings
+•V. Fegade, A. Chodankar, A. Bhingle, and S.
+Mhatre, “Residential security system based
+on facial recognition,” in2022 6th Interna-
+tional Conference on Trends in Electronics and
+Informatics (ICOEI), 2022, pp. 01–09. DOI:
+10.1109/ICOEI53556.2022.9776940.
+LANGUAGES
+MarathiMother Tongue
+EnglishC1
+GermanA2 (Learning B1)
+
