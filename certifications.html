@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certifications | Ajay Chodankar</title>
+    <link rel="stylesheet" href="styles.css?v=16">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <canvas id="particles-canvas"></canvas>
+
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="nav-logo">AC</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="certifications.html" class="active">Certifications</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-header section">
+        <div class="container">
+            <h1 class="hero-title gradient-text">Certifications & Achievements</h1>
+            <p class="section-description">Recognitions, specific credentials, and awards.</p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="container">
+            <div class="achievements-grid">
+                <!-- Achievement 1 -->
+                <div class="achievement-card fade-in" onclick="openModal(this)"
+                    data-image="assets/images/certificate_placeholder.png"
+                    data-title="Solves a BIG AEC Problem - Certificate">
+                    <div class="achievement-icon">🏆</div>
+                    <h3 class="achievement-title">Solves a BIG AEC Problem</h3>
+                    <p class="achievement-event">AEC Hackathon Munich 2024</p>
+                </div>
+                <!-- Reuse other achievements here... -->
+                <div class="achievement-card fade-in" onclick="openModal(this)"
+                    data-image="assets/images/certificate_placeholder.png" data-title="Best LLM Idea - Certificate">
+                    <div class="achievement-icon">💡</div>
+                    <h3 class="achievement-title">Best LLM Idea</h3>
+                    <p class="achievement-event">Healthcare Hackathon 2024 (Berlin)</p>
+                </div>
+                <div class="achievement-card fade-in" onclick="openModal(this)"
+                    data-image="assets/images/certificate_placeholder.png" data-title="Winner Rank 1 - Certificate">
+                    <div class="achievement-icon">🥇</div>
+                    <h3 class="achievement-title">Winner Rank 1</h3>
+                    <p class="achievement-event">HealthHack 2024 (Braunschweig)</p>
+                </div>
+                <div class="achievement-card fade-in" onclick="openModal(this)"
+                    data-image="assets/images/certificate_placeholder.png"
+                    data-title="AZ-900 Microsoft Azure - Certificate">
+                    <div class="achievement-icon">📜</div>
+                    <h3 class="achievement-title">AZ-900 Microsoft Azure</h3>
+                    <p class="achievement-event">Certified Fundamentals</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">© 2026 Ajay Chodankar. All rights reserved.</p>
+        </div>
+    </footer>
+    </footer>
+
+    <!-- Project Modal -->
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <div class="modal-video-container">
+                <div id="modal-placeholder" class="modal-video-placeholder">
+                    <i class="fas fa-image"></i>
+                    <p>Certificate Preview</p>
+                </div>
+                <video id="modal-video" controls class="modal-video" style="display:none;">
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <!-- Image element will be created dynamically by script.js if not present -->
+                <img id="modal-image" class="modal-video" style="display:none; object-fit: contain;">
+            </div>
+            <div class="modal-footer">
+                <h3 id="modal-title" class="modal-title-text">Certificate Details</h3>
+                <a id="modal-repo" href="#" target="_blank" class="btn btn-primary modal-btn" style="display: none;">
+                    <i class="fab fa-github"></i> View Code
+                </a>
+            </div>
+        </div>
+    </div>
+    <script src="script.js?v=17"></script>
+</body>
+
+</html>

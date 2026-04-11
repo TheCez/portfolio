@@ -264,6 +264,103 @@ class FadeInAnimator {
     }
 }
 
+// === MODAL CONTROLLER ===
+const modal = document.getElementById('project-modal');
+const modalVideo = document.getElementById('modal-video');
+const modalRepo = document.getElementById('modal-repo');
+const modalTitle = document.getElementById('modal-title');
+const modalPlaceholder = document.getElementById('modal-placeholder');
+
+// Global function to be called from HTML onclick
+// Global function to be called from HTML onclick
+window.openModal = function (element) {
+    if (!modal) return;
+
+    const videoSrc = element.getAttribute('data-video');
+    const imageSrc = element.getAttribute('data-image');
+    const repoLink = element.getAttribute('data-repo');
+    const title = element.getAttribute('data-title');
+
+    if (modalTitle) modalTitle.textContent = title || 'Details';
+
+    // Handle Repo Button visibility
+    if (modalRepo) {
+        if (repoLink && repoLink !== 'null' && repoLink !== '#') {
+            modalRepo.href = repoLink;
+            modalRepo.style.display = 'inline-flex';
+        } else {
+            modalRepo.style.display = 'none';
+        }
+    }
+
+    // Reset displays
+    if (modalVideo) modalVideo.style.display = 'none';
+    if (modalPlaceholder) modalPlaceholder.style.display = 'none';
+
+    // Handle Image Element (Create if not exists)
+    let modalImage = document.getElementById('modal-image');
+    if (!modalImage) {
+        // Fallback: Create dynamic image element if missing in HTML
+        const container = document.querySelector('.modal-video-container');
+        if (container) {
+            modalImage = document.createElement('img');
+            modalImage.id = 'modal-image';
+            modalImage.className = 'modal-video'; // Use same styling class
+            modalImage.style.objectFit = 'contain';
+            modalImage.style.display = 'none';
+            container.appendChild(modalImage);
+        }
+    } else {
+        modalImage.style.display = 'none';
+    }
+
+    if (videoSrc && videoSrc !== 'null') {
+        if (modalVideo) {
+            modalVideo.src = videoSrc;
+            modalVideo.style.display = 'block';
+        }
+    } else if (imageSrc && imageSrc !== 'null') {
+        if (modalImage) {
+            modalImage.src = imageSrc;
+            modalImage.style.display = 'block';
+        }
+    } else {
+        if (modalPlaceholder) modalPlaceholder.style.display = 'flex';
+    }
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+};
+
+window.closeModal = function () {
+    if (!modal) return;
+
+    modal.classList.remove('active');
+    setTimeout(() => {
+        if (modalVideo) {
+            modalVideo.pause();
+            modalVideo.src = "";
+        }
+        const modalImage = document.getElementById('modal-image');
+        if (modalImage) modalImage.src = "";
+    }, 300); // Wait for transition
+    document.body.style.overflow = '';
+};
+
+// Close on outside click
+window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// Close on Escape key
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+        closeModal();
+    }
+});
+
 // === INITIALIZE ===
 document.addEventListener('DOMContentLoaded', () => {
     new NeuralNetwork();
