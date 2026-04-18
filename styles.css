@@ -526,9 +526,9 @@ a:hover {
 }
 
 .about-text p {
-  font-size: var(--font-size-lg);
-  line-height: 1.8;
-  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-base);
+  line-height: 1.7;
+  margin-bottom: var(--spacing-sm);
 }
 
 .highlight {
