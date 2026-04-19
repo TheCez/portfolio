@@ -18,11 +18,16 @@ export default function SetupPage() {
       setError("Passwords do not match.");
       return;
     }
+
     setError("");
     const formData = new FormData(e.currentTarget);
+
     startTransition(async () => {
       try {
-        await setupAdmin(formData);
+        const result = await setupAdmin(formData);
+        if (result?.success) {
+          window.location.assign("/api/auth/signin?callbackUrl=%2Fadmin");
+        }
       } catch (err: any) {
         setError(err?.message ?? "Setup failed. Please try again.");
       }
@@ -30,78 +35,98 @@ export default function SetupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-6 text-gray-200">
-      <div className="max-w-md w-full bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600 mb-2">Welcome!</h1>
-          <p className="text-gray-400">Let&apos;s set up your admin credentials for the first time. Until this is completed, the portfolio website stays locked.</p>
+    <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] p-6 text-gray-200">
+      <div className="w-full max-w-md rounded-2xl border border-gray-800 bg-gray-900 p-8 shadow-2xl">
+        <div className="mb-8 text-center">
+          <h1 className="mb-2 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-3xl font-bold text-transparent">
+            Welcome!
+          </h1>
+          <p className="text-gray-400">
+            Let&apos;s set up your admin credentials for the first time. Until this is completed, the portfolio website stays locked.
+          </p>
         </div>
 
-        {error && (
-          <div className="mb-4 px-4 py-3 bg-red-900/40 border border-red-700 rounded-lg text-red-300 text-sm">
+        {error ? (
+          <div className="mb-4 rounded-lg border border-red-700 bg-red-900/40 px-4 py-3 text-sm text-red-300">
             {error}
           </div>
-        )}
+        ) : null}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Name (Optional)</label>
-            <input name="name" className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all placeholder:text-gray-600 text-white" placeholder="Ajay Chodankar" />
+            <label className="mb-1 block text-sm font-medium text-gray-300">Name (Optional)</label>
+            <input
+              name="name"
+              className="w-full rounded-lg border border-gray-800 bg-black px-4 py-3 text-white transition-all placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Ajay Chodankar"
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Username</label>
-            <input name="username" required minLength={3} className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all placeholder:text-gray-600 text-white" placeholder="admin" />
+            <label className="mb-1 block text-sm font-medium text-gray-300">Username</label>
+            <input
+              name="username"
+              required
+              minLength={3}
+              className="w-full rounded-lg border border-gray-800 bg-black px-4 py-3 text-white transition-all placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="admin"
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
-            <input name="email" type="email" required className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all placeholder:text-gray-600 text-white" placeholder="admin@example.com" />
+            <label className="mb-1 block text-sm font-medium text-gray-300">Email</label>
+            <input
+              name="email"
+              type="email"
+              required
+              className="w-full rounded-lg border border-gray-800 bg-black px-4 py-3 text-white transition-all placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="admin@example.com"
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Password</label>
+            <label className="mb-1 block text-sm font-medium text-gray-300">Password</label>
             <input
               name="password"
               type="password"
               required
               minLength={6}
               value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all placeholder:text-gray-600 text-white"
-              placeholder="••••••••"
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-lg border border-gray-800 bg-black px-4 py-3 text-white transition-all placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="********"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Re-enter Password</label>
+            <label className="mb-1 block text-sm font-medium text-gray-300">Re-enter Password</label>
             <input
               name="confirmPassword"
               type="password"
               required
               value={confirm}
-              onChange={e => setConfirm(e.target.value)}
-              className={`w-full px-4 py-3 bg-black border rounded-lg focus:ring-2 focus:outline-none transition-all placeholder:text-gray-600 text-white ${
+              onChange={(e) => setConfirm(e.target.value)}
+              className={`w-full rounded-lg border bg-black px-4 py-3 text-white transition-all placeholder:text-gray-600 focus:outline-none focus:ring-2 ${
                 confirmTouched
                   ? passwordsMatch
                     ? "border-green-600 focus:ring-green-500"
                     : "border-red-600 focus:ring-red-500"
                   : "border-gray-800 focus:ring-indigo-500"
               }`}
-              placeholder="••••••••"
+              placeholder="********"
             />
-            {confirmTouched && !passwordsMatch && (
+            {confirmTouched && !passwordsMatch ? (
               <p className="mt-1 text-xs text-red-400">Passwords do not match</p>
-            )}
-            {confirmTouched && passwordsMatch && (
-              <p className="mt-1 text-xs text-green-400">✓ Passwords match</p>
-            )}
+            ) : null}
+            {confirmTouched && passwordsMatch ? (
+              <p className="mt-1 text-xs text-green-400">Passwords match</p>
+            ) : null}
           </div>
 
           <button
             type="submit"
             disabled={isPending || (confirmTouched && !passwordsMatch)}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-colors mt-4"
+            className="mt-4 w-full rounded-lg bg-indigo-600 px-4 py-3 font-bold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPending ? "Setting up..." : "Complete Setup"}
           </button>

@@ -24,7 +24,6 @@ services:
       - minio_data:/data
     networks:
       - portfolio
-    # No ports exposed - only accessible internally to the portfolio container
 
   db-backup:
     image: postgres:15-alpine
@@ -48,24 +47,25 @@ services:
     build: .
     container_name: portfolio_website
     restart: always
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     depends_on:
       - db
       - minio
     environment:
       DATABASE_URL: postgresql://portfolio_user:portfolio_password@db:5432/portfolio_db?schema=public
-      NEXTAUTH_URL: http://localhost:3000
-      NEXTAUTH_SECRET: A_VERY_SECURE_RANDOM_SECRET_KEY_HERE
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      AUTH_TRUST_HOST: "true"
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-}
       STORAGE_ENDPOINT: http://minio:9000
       STORAGE_REGION: us-east-1
       STORAGE_BUCKET: portfolio-media
       STORAGE_ACCESS_KEY: minioadmin
       STORAGE_SECRET_KEY: minioadmin
-      # FACTORY_RESET: "true"  # ⚠️ Uncomment to wipe ALL data on next restart. Re-comment after reset!
+      FACTORY_RESET: ${FACTORY_RESET:-false}
     networks:
       - portfolio
-      - setup_npm  # Only this container is reachable via Nginx Proxy Manager
+      - setup_npm
 
 networks:
   portfolio:

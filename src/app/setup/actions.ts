@@ -1,7 +1,6 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
 import { getDefaultSiteSettings } from "@/lib/site-settings";
 
 export async function setupAdmin(formData: FormData) {
@@ -53,6 +52,5 @@ export async function setupAdmin(formData: FormData) {
     });
   }
 
-  // Redirect to the sign-in page and return to admin after login.
-  redirect("/api/auth/signin?callbackUrl=/admin");
+  return { success: true };
 }

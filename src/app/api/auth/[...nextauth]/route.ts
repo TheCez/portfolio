@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
+  trustHost: true,
   providers: [
     CredentialsProvider({
       name: "Admin Login",
@@ -51,6 +52,24 @@ export const authOptions: NextAuthOptions = {
         session.user.email = token.email ?? session.user.email;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+
+      try {
+        const target = new URL(url);
+        const base = new URL(baseUrl);
+
+        if (target.origin === base.origin) {
+          return url;
+        }
+      } catch {
+        return baseUrl;
+      }
+
+      return baseUrl;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

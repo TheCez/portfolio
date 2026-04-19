@@ -16,7 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/api/auth/signin?callbackUrl=/admin");
+    redirect("/api/auth/signin?callbackUrl=%2Fadmin");
   }
 
   return (

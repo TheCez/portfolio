@@ -39,7 +39,7 @@ export default function Navbar({ badge }: { badge: string }) {
       >
         <a
           href="#home"
-          className="rounded-xl border border-white/35 px-3 py-1.5 text-lg font-light tracking-[0.25em] text-white transition hover:border-white/45 hover:bg-white/5"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/35 text-center text-sm font-medium uppercase leading-none tracking-[0.12em] text-white transition hover:border-white/45 hover:bg-white/5"
         >
           {badge}
         </a>
