@@ -58,7 +58,7 @@ services:
       - ./runtime:/app/runtime
     environment:
       DATABASE_URL: postgresql://portfolio_user:portfolio_password@db:5432/portfolio_db?schema=public
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-}
       AUTH_TRUST_HOST: "true"
       NEXTAUTH_URL: ${NEXTAUTH_URL:-}
       STORAGE_ENDPOINT: http://minio:9000

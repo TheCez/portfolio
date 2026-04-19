@@ -4,20 +4,32 @@ set -e
 RUNTIME_DIR=${APP_RUNTIME_DIR:-/app/runtime}
 SECRET_FILE="$RUNTIME_DIR/nextauth_secret"
 
-mkdir -p "$RUNTIME_DIR"
+if [ "$(id -u)" = "0" ] && [ "${ENTRYPOINT_PRIV_DROPPED:-0}" != "1" ]; then
+  mkdir -p "$RUNTIME_DIR"
 
-if [ -n "${NEXTAUTH_SECRET:-}" ]; then
-  printf "%s" "$NEXTAUTH_SECRET" > "$SECRET_FILE"
+  if [ -n "${NEXTAUTH_SECRET:-}" ]; then
+    printf "%s" "$NEXTAUTH_SECRET" > "$SECRET_FILE"
+    echo "NEXTAUTH_SECRET provided via environment and synced to runtime storage."
+  elif [ -f "$SECRET_FILE" ]; then
+    NEXTAUTH_SECRET="$(cat "$SECRET_FILE")"
+    export NEXTAUTH_SECRET
+    echo "Loaded NEXTAUTH_SECRET from runtime storage."
+  else
+    NEXTAUTH_SECRET="$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")"
+    export NEXTAUTH_SECRET
+    printf "%s" "$NEXTAUTH_SECRET" > "$SECRET_FILE"
+    echo "Generated persistent NEXTAUTH_SECRET in runtime storage."
+  fi
+
+  chmod 700 "$RUNTIME_DIR" || true
   chmod 600 "$SECRET_FILE" || true
-  echo "NEXTAUTH_SECRET provided via environment and synced to runtime storage."
-elif [ -f "$SECRET_FILE" ]; then
+  chown -R nextjs:nodejs "$RUNTIME_DIR" || true
+
+  exec su-exec nextjs env ENTRYPOINT_PRIV_DROPPED=1 NEXTAUTH_SECRET="$NEXTAUTH_SECRET" sh ./entrypoint.sh
+fi
+
+if [ -z "${NEXTAUTH_SECRET:-}" ] && [ -f "$SECRET_FILE" ]; then
   export NEXTAUTH_SECRET="$(cat "$SECRET_FILE")"
-  echo "Loaded NEXTAUTH_SECRET from runtime storage."
-else
-  export NEXTAUTH_SECRET="$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")"
-  printf "%s" "$NEXTAUTH_SECRET" > "$SECRET_FILE"
-  chmod 600 "$SECRET_FILE" || true
-  echo "Generated persistent NEXTAUTH_SECRET in runtime storage."
 fi
 
 DB_URL=${DATABASE_URL}
