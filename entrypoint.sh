@@ -19,12 +19,16 @@ echo "Database is ready."
 # ── FACTORY RESET ────────────────────────────────────────────────────────────
 # Set FACTORY_RESET=true in docker-compose.yml environment to wipe all data
 # and start completely fresh. Remove or set to false after reset.
-if [ "${FACTORY_RESET}" = "true" ]; then
-  echo "⚠️  FACTORY_RESET=true detected. Dropping and recreating all tables..."
-  PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
-    -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" 2>/dev/null || true
-  echo "All data wiped. Schema will be recreated fresh."
-fi
+case "$(echo "${FACTORY_RESET:-}" | tr '[:upper:]' '[:lower:]')" in
+  1|true|yes|y|on)
+    echo "⚠️  FACTORY_RESET detected. Dropping and recreating public schema..."
+    PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
+      -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;" 2>/dev/null || true
+    echo "All data wiped. Schema will be recreated fresh."
+    ;;
+  *)
+    ;;
+esac
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Check if admin user exists using psql directly (silently fails if no tables yet)
