@@ -1,14 +1,32 @@
-import { prisma } from "@/lib/prisma";
+"use client";
+
+import { useState, useTransition } from "react";
 import { setupAdmin } from "./actions";
-import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
+export default function SetupPage() {
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState("");
+  const [isPending, startTransition] = useTransition();
 
-export default async function SetupPage() {
-  // Check if a user already exists (Security)
-  const count = await prisma.user.count();
-  if (count > 0) {
-    redirect("/admin");
+  const passwordsMatch = password === confirm;
+  const confirmTouched = confirm.length > 0;
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!passwordsMatch) {
+      setError("Passwords do not match.");
+      return;
+    }
+    setError("");
+    const formData = new FormData(e.currentTarget);
+    startTransition(async () => {
+      try {
+        await setupAdmin(formData);
+      } catch (err: any) {
+        setError(err?.message ?? "Setup failed. Please try again.");
+      }
+    });
   }
 
   return (
@@ -19,7 +37,13 @@ export default async function SetupPage() {
           <p className="text-gray-400">Let&apos;s set up your admin credentials for the first time. Until this is completed, the portfolio website stays locked.</p>
         </div>
 
-        <form action={setupAdmin} className="space-y-5">
+        {error && (
+          <div className="mb-4 px-4 py-3 bg-red-900/40 border border-red-700 rounded-lg text-red-300 text-sm">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Name (Optional)</label>
             <input name="name" className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all placeholder:text-gray-600 text-white" placeholder="Ajay Chodankar" />
@@ -37,11 +61,49 @@ export default async function SetupPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Password</label>
-            <input name="password" type="password" required minLength={6} className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all placeholder:text-gray-600 text-white" placeholder="••••••••" />
+            <input
+              name="password"
+              type="password"
+              required
+              minLength={6}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all placeholder:text-gray-600 text-white"
+              placeholder="••••••••"
+            />
           </div>
 
-          <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors mt-4">
-            Complete Setup
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Re-enter Password</label>
+            <input
+              name="confirmPassword"
+              type="password"
+              required
+              value={confirm}
+              onChange={e => setConfirm(e.target.value)}
+              className={`w-full px-4 py-3 bg-black border rounded-lg focus:ring-2 focus:outline-none transition-all placeholder:text-gray-600 text-white ${
+                confirmTouched
+                  ? passwordsMatch
+                    ? "border-green-600 focus:ring-green-500"
+                    : "border-red-600 focus:ring-red-500"
+                  : "border-gray-800 focus:ring-indigo-500"
+              }`}
+              placeholder="••••••••"
+            />
+            {confirmTouched && !passwordsMatch && (
+              <p className="mt-1 text-xs text-red-400">Passwords do not match</p>
+            )}
+            {confirmTouched && passwordsMatch && (
+              <p className="mt-1 text-xs text-green-400">✓ Passwords match</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={isPending || (confirmTouched && !passwordsMatch)}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-colors mt-4"
+          >
+            {isPending ? "Setting up..." : "Complete Setup"}
           </button>
         </form>
       </div>

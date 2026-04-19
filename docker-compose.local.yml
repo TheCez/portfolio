@@ -48,6 +48,7 @@ services:
       STORAGE_BUCKET: portfolio-media
       STORAGE_ACCESS_KEY: minioadmin
       STORAGE_SECRET_KEY: minioadmin
+      # FACTORY_RESET: "true"  # ⚠️ Uncomment to wipe ALL data on next restart. Re-comment after reset!
     networks:
       - default
 

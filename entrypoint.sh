@@ -1,11 +1,8 @@
 #!/bin/sh
 set -e
 
-echo "Checking database status..."
-
 # Parse the DB URL to extract connection details for psql
 DB_URL=${DATABASE_URL}
-# Extract host from URL (between @ and :)
 DB_HOST=$(echo "$DB_URL" | sed 's|.*@\([^:/]*\).*|\1|')
 DB_PORT=$(echo "$DB_URL" | sed 's|.*:\([0-9]*\)/.*|\1|')
 DB_NAME=$(echo "$DB_URL" | sed 's|.*/\([^?]*\).*|\1|')
@@ -19,7 +16,18 @@ until PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$
 done
 echo "Database is ready."
 
-# Check if admin user exists using psql directly
+# ── FACTORY RESET ────────────────────────────────────────────────────────────
+# Set FACTORY_RESET=true in docker-compose.yml environment to wipe all data
+# and start completely fresh. Remove or set to false after reset.
+if [ "${FACTORY_RESET}" = "true" ]; then
+  echo "⚠️  FACTORY_RESET=true detected. Dropping and recreating all tables..."
+  PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
+    -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" 2>/dev/null || true
+  echo "All data wiped. Schema will be recreated fresh."
+fi
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Check if admin user exists using psql directly (silently fails if no tables yet)
 USER_COUNT=$(PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -t -c 'SELECT COUNT(*) FROM "User";' 2>/dev/null | tr -d ' \n' || echo "0")
 
 if [ "$USER_COUNT" = "0" ] || [ -z "$USER_COUNT" ]; then
