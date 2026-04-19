@@ -1,16 +1,34 @@
 #!/bin/sh
 set -e
 
-echo "Waiting for database to connect..."
+echo "Checking database status..."
 
-# Optional: Add a simple loop to wait for postgres to be ready (requires pg_isready)
-# But standard npx prisma db push will fail if db is not up, so Next.js's restart: always handles retries naturally
+# Parse the DB URL to extract connection details for psql
+DB_URL=${DATABASE_URL}
+# Extract host from URL (between @ and :)
+DB_HOST=$(echo "$DB_URL" | sed 's|.*@\([^:/]*\).*|\1|')
+DB_PORT=$(echo "$DB_URL" | sed 's|.*:\([0-9]*\)/.*|\1|')
+DB_NAME=$(echo "$DB_URL" | sed 's|.*/\([^?]*\).*|\1|')
+DB_USER=$(echo "$DB_URL" | sed 's|.*://\([^:]*\):.*|\1|')
+DB_PASS=$(echo "$DB_URL" | sed 's|.*://[^:]*:\([^@]*\)@.*|\1|')
 
-echo "Applying Prisma Schema migrations..."
-npx prisma db push --accept-data-loss
+# Wait for postgres to actually be ready before doing anything
+until PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1;" > /dev/null 2>&1; do
+  echo "Waiting for database to accept connections..."
+  sleep 2
+done
+echo "Database is ready."
 
-echo "Seeding the database..."
-npx ts-node --compiler-options="{\"module\":\"CommonJS\"}" prisma/seed.ts || echo "Seed script skipped or failed."
+# Check if admin user exists using psql directly
+USER_COUNT=$(PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -t -c 'SELECT COUNT(*) FROM "User";' 2>/dev/null | tr -d ' \n' || echo "0")
+
+if [ "$USER_COUNT" = "0" ] || [ -z "$USER_COUNT" ]; then
+  echo "No admin found. Pushing schema and seeding database..."
+  npx prisma db push --accept-data-loss
+  npx ts-node --compiler-options="{\"module\":\"CommonJS\"}" prisma/seed.ts || echo "Seed script skipped or failed."
+else
+  echo "Admin account exists ($USER_COUNT user(s)). Skipping schema push and seed."
+fi
 
 echo "Starting Next.js..."
 exec node server.js
