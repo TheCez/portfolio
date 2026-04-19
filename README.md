@@ -73,7 +73,8 @@ FACTORY_RESET="false"
 
 ### Notes
 
-- `NEXTAUTH_SECRET` is required.
+- `NEXTAUTH_SECRET` is optional if you want the app to generate and persist one automatically into `./runtime/nextauth_secret`.
+- If you do provide `NEXTAUTH_SECRET`, it will still be synced into runtime storage for persistence across container recreations.
 - `NEXTAUTH_URL` is optional in production if your deployment forwards the correct host/protocol headers, but setting it explicitly is often cleaner.
 - `FACTORY_RESET=true` wipes the app back to a clean state on the next container boot, then the container can be started normally again with `FACTORY_RESET=false`.
 
@@ -136,8 +137,6 @@ Important behavior:
 - The app exposes port `3000` internally for container-to-container access
 - The stack includes an external `setup_npm` network entry because this project was prepared for reverse-proxy-based deployments
 
-You should adjust the Docker networks, public app exposure, and related deployment wiring to match your own environment.
-
 ### Launch production stack
 
 ```bash
@@ -168,8 +167,24 @@ By default:
 
 - local debug stack uses MinIO exposed on localhost
 - production compose uses MinIO as an internal container service
+- MinIO object files are stored locally in `./data/minio`
 
 The app serves uploaded files through its own `/api/media/...` route, which allows storage to stay internal.
+
+## Auth Secret Persistence
+
+The app persists its auth secret in a runtime folder.
+
+- production runtime secret path: `./runtime/nextauth_secret`
+- local debug runtime secret path: `./runtime_debug/nextauth_secret`
+
+Behavior:
+
+- if `NEXTAUTH_SECRET` is provided, it is copied into runtime storage
+- if `NEXTAUTH_SECRET` is missing and a runtime secret file exists, that secret is reused
+- if both are missing, the app generates a secret automatically and saves it
+
+This makes auth more portable across rebuilds and server moves.
 
 ## Admin Features
 
@@ -196,6 +211,26 @@ When enabled:
 
 Use this carefully in real deployments.
 
+## Data Recovery Model
+
+The current recovery model is intentionally split:
+
+- live Postgres state is kept in a Docker volume
+- Postgres backups are written to `./db_backups`
+- MinIO media files are kept in `./data/minio`
+- auth secret is kept in `./runtime`
+
+On a fresh Postgres initialization:
+
+- if `./db_backups` contains SQL dumps, the newest backup is restored automatically
+- if no SQL dump exists, the database starts empty and the app seeds placeholder content
+
+This means:
+
+- media files move with the project folder
+- auth secret moves with the project folder
+- database recovery happens from SQL backups rather than from copying raw Postgres data files
+
 ## Current Product Notes
 
 This project already includes several quality-of-life improvements added during recent development:
@@ -215,6 +250,8 @@ The production compose file includes a `db-backup` container that runs nightly P
 ```text
 ./db_backups/
 ```
+
+If the database starts from an empty state later, the newest backup in that folder is used automatically during initialization.
 
 ## Useful Routes
 
