@@ -11,6 +11,8 @@ services:
       - "5433:5432"
     volumes:
       - pgdata_debug:/var/lib/postgresql/data
+      - ./db_backups:/backups
+      - ./scripts/restore-latest-backup.sh:/docker-entrypoint-initdb.d/restore-latest-backup.sh:ro
     networks:
       - default
 
@@ -26,7 +28,7 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - minio_data_debug:/data
+      - ./data_debug/minio:/data
     networks:
       - default
 
@@ -39,6 +41,8 @@ services:
     depends_on:
       - db
       - minio
+    volumes:
+      - ./runtime_debug:/app/runtime
     environment:
       DATABASE_URL: postgresql://portfolio_user:portfolio_password@db:5432/portfolio_db?schema=public
       NEXTAUTH_SECRET: local_debug_secret_key_123
@@ -55,4 +59,3 @@ services:
 
 volumes:
   pgdata_debug:
-  minio_data_debug:

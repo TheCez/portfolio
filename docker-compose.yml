@@ -9,6 +9,8 @@ services:
       POSTGRES_DB: portfolio_db
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./db_backups:/backups
+      - ./scripts/restore-latest-backup.sh:/docker-entrypoint-initdb.d/restore-latest-backup.sh:ro
     networks:
       - portfolio
 
@@ -21,7 +23,7 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
     volumes:
-      - minio_data:/data
+      - ./data/minio:/data
     networks:
       - portfolio
 
@@ -52,6 +54,8 @@ services:
     depends_on:
       - db
       - minio
+    volumes:
+      - ./runtime:/app/runtime
     environment:
       DATABASE_URL: postgresql://portfolio_user:portfolio_password@db:5432/portfolio_db?schema=public
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
@@ -74,4 +78,3 @@ networks:
 
 volumes:
   pgdata:
-  minio_data:
