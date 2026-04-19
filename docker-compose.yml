@@ -20,13 +20,11 @@ services:
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
-    ports:
-      - "9000:9000"
-      - "9001:9001"
     volumes:
       - minio_data:/data
     networks:
       - portfolio
+    # No ports exposed - only accessible internally to the portfolio container
 
   db-backup:
     image: postgres:15-alpine
@@ -66,9 +64,12 @@ services:
       STORAGE_SECRET_KEY: minioadmin
     networks:
       - portfolio
+      - setup_npm  # Only this container is reachable via Nginx Proxy Manager
 
 networks:
   portfolio:
+  setup_npm:
+    external: true
 
 volumes:
   pgdata:
