@@ -13,19 +13,29 @@ services:
       - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - default
 
+  portfolio:
+    build: .
+    container_name: portfolio_website
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      # Use db service name for the postgres connection string inside Docker
+      DATABASE_URL: postgresql://portfolio_user:portfolio_password@db:5432/portfolio_db?schema=public
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: A_VERY_SECURE_RANDOM_SECRET_KEY_HERE
+    networks:
+      - default
+      - setup_npm
 
-  # Optional: portfolio app if run in docker
-  # portfolio:
-  #   build: .
-  #   container_name: portfolio_website
-  #   restart: unless-stopped
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - db
-  #   environment:
-  #     DATABASE_URL: postgresql://portfolio_user:portfolio_password@db:5432/portfolio_db?schema=public
+networks:
+  setup_npm:
+    external: true
 
 volumes:
   pgdata:

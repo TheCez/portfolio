@@ -38,16 +38,14 @@ To effortlessly spin up the entire backend and schedule database backups, open a
 3. Conditionally populates the database with initial dummy data if the tables are empty.
 4. Natively registers a Windows Scheduled Task (`PortfolioNightlyBackup`) to automatically run `pg_dump` every night at 3:00 AM!
 
-### 3. Start Frontend & Initial Setup
-Once the background infrastructure is ready, start your frontend local development server:
+### 3. Accessing Your Portfolio
+Since the `launch.ps1` script spins up the Next.js app in a Docker container alongside your database, the app is instantly ready!
 
-```bash
-npm run dev
-```
+Open your browser and navigate to `http://localhost:3000`.
 
-Next, open your browser and navigate to `http://localhost:3000/admin`. 
+> **Optional Local Dev:** If you wish to run the app natively outside of Docker while keeping the containerized DB running, you can run `npm run dev` in your terminal.
 
-> **Security Note:** Upon first launch, the app will instantly redirect you to the **`/setup`** onboarding flow. Follow the screen instructions to natively register your Root Administrator credentials (`Username`, `Email`, and `Password`). Once created, the setup closes forever and you can access your protected CMS!
+> **Security Note:** Upon first launch, hitting `http://localhost:3000/admin` will instantly redirect you to the **`/setup`** onboarding flow. Follow the screen instructions to natively register your Root Administrator credentials (`Username`, `Email`, and `Password`). Once created, the setup closes forever and you can access your protected CMS!
 
 ---
 
