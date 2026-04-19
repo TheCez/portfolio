@@ -1,181 +1,68 @@
-# Ajay Chodankar - Portfolio Website
+# Ajay Chodankar | Dynamic Portfolio
 
-A modern, responsive portfolio website showcasing AI research expertise, projects, and professional experience.
+A modern, high-performance portfolio platform completely dynamically driven by a custom Admin Content Management System (CMS). 
 
-## 🚀 Features
-
-- **Dark Theme Design** with vibrant gradients and glassmorphism effects
-- **Particle Animation Background** creating an immersive AI/tech aesthetic
-- **Dynamic Typing Effect** in the hero section
-- **Smooth Scroll Animations** triggered by viewport intersections
-- **Interactive Timeline** for professional experience
-- **Responsive Design** optimized for all screen sizes
-- **Project Showcase** with featured AI/ML projects
-- **Achievement Badges** highlighting hackathon wins and certifications
-- **SEO Optimized** with proper meta tags and semantic HTML
-
-## 📁 File Structure
-
-```
-portfolio_website/
-├── index.html          # Main HTML file with all content sections
-├── styles.css          # Complete CSS design system
-├── script.js           # Interactive JavaScript features
-├── Resume_Ajay_Chodankar.pdf  # Original resume (source document)
-├── extract_pdf.py      # PDF text extraction utility
-├── resume_text.txt     # Extracted resume text
-└── README.md           # You are here!
-```
-
-## 🎨 Design Highlights
-
-### Color Palette
-- **Primary**: Indigo (#6366f1)
-- **Secondary**: Purple (#8b5cf6)
-- **Accent**: Cyan (#06b6d4)
-- **Background**: Slate (#0f172a)
-- **Text**: Clean whites and grays
-
-### Typography
-- **Headings**: Inter (Modern, clean sans-serif)
-- **Body**: Inter
-- **Code/Technical**: Roboto Mono
-
-### Key Sections
-1. **Hero** - Animated introduction with particle background
-2. **About** - Professional summary and background
-3. **Skills** - Categorized expertise (AI, Backend, Cloud, etc.)
-4. **Experience** - Timeline of professional roles
-5. **Projects** - Featured AI/ML projects with achievements
-6. **Education** - Academic background
-7. **Achievements** - Hackathon wins and certifications
-8. **Contact** - Social links and contact information
-
-## 🛠️ Technologies Used
-
-- **HTML5** - Semantic structure
-- **CSS3** - Custom properties, Flexbox, Grid, Animations
-- **Vanilla JavaScript** - ES6+, Canvas API
-- **Google Fonts** - Inter, Roboto Mono
-- **Font Awesome** - Icons
-
-## 📱 Responsive Breakpoints
-
-- **Mobile**: < 480px
-- **Tablet**: < 768px
-- **Desktop**: > 768px
-
-## 🚀 Getting Started
-
-### Option 1: Direct File Access
-Simply open `index.html` in any modern web browser:
-```bash
-# Windows
-start index.html
-
-# macOS
-open index.html
-
-# Linux
-xdg-open index.html
-```
-
-### Option 2: Local Server
-For better performance and testing, use a local server:
-
-**Using Python:**
-```bash
-# Python 3
-python -m http.server 8000
-
-# Then open http://localhost:8000 in your browser
-```
-
-**Using Node.js (http-server):**
-```bash
-npx http-server -p 8000
-```
-
-**Using VS Code:**
-- Install "Live Server" extension
-- Right-click on `index.html`
-- Select "Open with Live Server"
-
-## 🎯 Customization
-
-### Updating Content
-Edit `index.html` to update:
-- Personal information
-- Project details
-- Skills and technologies
-- Contact information
-
-### Changing Colors
-Modify CSS custom properties in `styles.css`:
-```css
-:root {
-  --primary: #6366f1;
-  --secondary: #8b5cf6;
-  --accent: #06b6d4;
-  /* ... */
-}
-```
-
-### Adjusting Animations
-Fine-tune animation speeds in `script.js`:
-```javascript
-// Particle count
-this.particleCount = 80;
-
-// Typing speed
-let typeSpeed = 150;
-```
-
-## 📦 Deployment
-
-### GitHub Pages
-1. Create a new repository on GitHub
-2. Push all files to the repository
-3. Go to Settings > Pages
-4. Select main branch as source
-5. Your site will be live at `https://yourusername.github.io/repository-name`
-
-### Netlify
-1. Drag and drop the folder onto Netlify
-2. Instant deployment with custom domain support
-
-### Vercel
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
-```
-
-## 🎨 Design Inspirations
-
-This portfolio combines modern web design trends:
-- Glassmorphism for depth and elegance
-- Particle effects for dynamic engagement
-- Dark theme for reduced eye strain
-- Gradient accents for visual interest
-- Micro-animations for premium feel
-
-## 📄 License
-
-© 2026 Ajay Chodankar. All rights reserved.
-
-## 📞 Contact
-
-- **Email**: ajaychodankar15@gmail.com
-- **Phone**: +49 176 764 66955
-- **LinkedIn**: [ajay-chodankar](https://linkedin.com/in/ajay-chodankar)
-- **GitHub**: [TheCez](https://github.com/TheCez)
-- **Location**: Braunschweig, Germany
+**Tech Stack**: Next.js 16 (App Router), React, Tailwind CSS v4, PostgreSQL, Prisma ORM, NextAuth.js, Framer Motion.
 
 ---
 
-**Built with passion and AI** 🚀
+## 🚀 Getting Started
 
-For questions or feedback, feel free to reach out!
+### Prerequisites
+Make sure you have the following installed on your machine:
+- [Node.js (npm)](https://nodejs.org/)
+- [Docker & Docker Compose](https://www.docker.com/)
+
+### 1. Environment Variables Configuration
+Copy the `.env.example` to `.env` or create a `.env` file in the root directory. You must set the following variables:
+
+```env
+# PostgreSQL connection string (Docker uses port 5433 by default via docker-compose)
+DATABASE_URL="postgresql://portfolio_user:portfolio_password@localhost:5433/portfolio_db?schema=public"
+
+# NextAuth Configuration
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="A_VERY_SECURE_RANDOM_SECRET_KEY_HERE"
+```
+
+### 2. Automated Launch
+To effortlessly spin up the entire backend and schedule database backups, open a terminal in Windows as Administrator (optional but recommended for task scheduling) and run:
+
+```powershell
+.\launch.ps1
+```
+
+**What the Launch Script does:**
+1. Starts the `portfolio_db` PostgreSQL container silently using Docker Compose.
+2. Synchronizes the Prisma Schema to the running database.
+3. Conditionally populates the database with initial dummy data if the tables are empty.
+4. Natively registers a Windows Scheduled Task (`PortfolioNightlyBackup`) to automatically run `pg_dump` every night at 3:00 AM!
+
+### 3. Start Frontend & Initial Setup
+Once the background infrastructure is ready, start your frontend local development server:
+
+```bash
+npm run dev
+```
+
+Next, open your browser and navigate to `http://localhost:3000/admin`. 
+
+> **Security Note:** Upon first launch, the app will instantly redirect you to the **`/setup`** onboarding flow. Follow the screen instructions to natively register your Root Administrator credentials (`Username`, `Email`, and `Password`). Once created, the setup closes forever and you can access your protected CMS!
+
+---
+
+## 🎨 Admin Dashboard Capabilities
+The `/admin` dashboard securely handles:
+- Checking overall portfolio site statistics (total Projects, Experiences).
+- Updating, deleting, or adding new Projects.
+- All live site content changes update in real-time across your frontend views via Next.js Server Actions.
+
+---
+
+## 📝 Roadmap & Future Features (TODO)
+
+- [ ] **Dynamic Resume Generation:** Integrate `@react-pdf/renderer` to dynamically compile and offer an auto-updated, beautifully formatted `.pdf` resume strictly originating from the live Postgres Database.
+- [ ] **Dedicated Markdown Blog Engine:** Introduce a `BlogPost` Prisma model & dynamic routes (`/blog/[slug]`) paired with a robust Rich-Text/MDX editor within the CMS to natively post detailed AI/ML research notes directly entirely within the platform.
+- [ ] **Cloud Storage Integration (Media):** Replace raw URL linking references with Amazon S3 or Vercel Blob integrations allowing seamless "Drag & Drop" media uploading directly inside the Admin editing panels. 
+- [ ] **Markdown Formatted Project Cards:** Render `react-markdown` on the live portfolio to allow formatted bold texts, blockquotes, and internal referencing syntax directly inside entity descriptions for a much richer exhibition interface. 
+- [ ] **Privacy-focused Custom Analytics:** Establish a lightweight `PageViews` metrics table & Recharts visualizations inside the Admin dashboard to natively track, trace, and aggregate demographic traffic routing strictly without implementing obtrusive 3rd-party cookie trackers like Google Analytics.

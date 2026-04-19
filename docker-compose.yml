@@ -1,13 +1,31 @@
 version: '3.8'
 
 services:
-  portfolio:
-    build: .
-    container_name: portfolio_website
-    restart: unless-stopped
-    networks:
-      - setup_npm
+  db:
+    image: postgres:15-alpine
+    container_name: portfolio_db
+    restart: always
+    environment:
+      POSTGRES_USER: portfolio_user
+      POSTGRES_PASSWORD: portfolio_password
+      POSTGRES_DB: portfolio_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
-networks:
-  setup_npm:
-    external: true
+
+  # Optional: portfolio app if run in docker
+  # portfolio:
+  #   build: .
+  #   container_name: portfolio_website
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     DATABASE_URL: postgresql://portfolio_user:portfolio_password@db:5432/portfolio_db?schema=public
+
+volumes:
+  pgdata:

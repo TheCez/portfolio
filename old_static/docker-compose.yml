@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  portfolio:
+    build: .
+    container_name: portfolio_website
+    restart: unless-stopped
+    networks:
+      - setup_npm
+
+networks:
+  setup_npm:
+    external: true
