@@ -1,8 +1,11 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LogOut, Home, LayoutDashboard, Briefcase, Code, GraduationCap, Trophy } from "lucide-react";
+import { LogOut, Home, LayoutDashboard, Briefcase, Code, GraduationCap, Trophy, Settings, BrainCircuit, MessageSquareQuote } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const userCount = await prisma.user.count();
@@ -10,10 +13,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/setup");
   }
 
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/api/auth/signin");
+    redirect("/api/auth/signin?callbackUrl=/admin");
   }
 
   return (
@@ -36,11 +39,20 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin/projects" className="flex items-center gap-3 px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
             <Code size={20} /> Projects
           </Link>
+          <Link href="/admin/skills" className="flex items-center gap-3 px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+            <BrainCircuit size={20} /> Skills
+          </Link>
           <Link href="/admin/education" className="flex items-center gap-3 px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
             <GraduationCap size={20} /> Education
           </Link>
           <Link href="/admin/achievements" className="flex items-center gap-3 px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
             <Trophy size={20} /> Achievements
+          </Link>
+          <Link href="/admin/references" className="flex items-center gap-3 px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+            <MessageSquareQuote size={20} /> References
+          </Link>
+          <Link href="/admin/settings" className="flex items-center gap-3 px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+            <Settings size={20} /> Site Settings
           </Link>
         </nav>
         <div className="p-4 border-t border-gray-200 dark:border-gray-800">

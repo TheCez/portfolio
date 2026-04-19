@@ -29,6 +29,7 @@ model Project {
   id          String   @id @default(cuid())
   title       String
   description String
+  imageUrl    String?
   repoUrl     String?
   videoUrl    String?  // Can be local path or external link
   techTags    String   // Comma separated tags
@@ -42,6 +43,7 @@ model Education {
   university  String
   dates       String
   results     String
+  imageUrl    String?
   order       Int      @default(0)
 }
 
@@ -50,6 +52,21 @@ model Achievement {
   title       String
   event       String
   icon        String   // Emoji or Font/Lucide icon name
+  imageUrl    String?
+  order       Int      @default(0)
+}
+
+model Reference {
+  id          String   @id @default(cuid())
+  quote       String
+  name        String
+  role        String
+  company     String?
+  dateLabel   String?
+  photoUrl    String?
+  source      String?
+  sourceUrl   String?
+  isFeatured  Boolean  @default(false)
   order       Int      @default(0)
 }
 
@@ -62,6 +79,17 @@ model Skill {
 }
 
 model Settings {
-  id          String   @id @default(cuid())
-  isSeeded    Boolean  @default(false)
+  id               String   @id @default(cuid())
+  isSeeded         Boolean  @default(false)
+  heroTitle        String?
+  heroRole         String?
+  heroSpecialties  String?
+  aboutTitle       String?
+  aboutParagraphs  String?
+  profileImageUrl  String?
+  contactEmail     String?
+  contactPhone     String?
+  contactLocation  String?
+  linkedinUrl      String?
+  githubUrl        String?
 }

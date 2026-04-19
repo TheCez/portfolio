@@ -1,39 +1,86 @@
 "use client";
-import { motion } from "framer-motion";
 
-export default function Contact() {
+import { motion } from "framer-motion";
+import { BriefcaseBusiness, Code2, Mail, MapPin, Phone } from "lucide-react";
+
+type ContactContent = {
+  contactEmail: string;
+  contactPhone: string;
+  contactLocation: string;
+  linkedinUrl: string;
+  githubUrl: string;
+};
+
+export default function Contact({ content }: { content: ContactContent }) {
+  const contactLinks = [
+    {
+      href: `mailto:${content.contactEmail}`,
+      label: content.contactEmail,
+      icon: Mail,
+    },
+    {
+      href: `tel:${content.contactPhone.replace(/\s+/g, "")}`,
+      label: content.contactPhone,
+      icon: Phone,
+    },
+    {
+      href: "#",
+      label: content.contactLocation,
+      icon: MapPin,
+    },
+  ];
+
+  const socialLinks = [
+    { href: content.linkedinUrl, label: "LinkedIn", icon: BriefcaseBusiness },
+    { href: content.githubUrl, label: "GitHub", icon: Code2 },
+    { href: `mailto:${content.contactEmail}`, label: "Email", icon: Mail },
+  ];
+
   return (
-    <section id="contact" className="py-24 relative overflow-hidden">
-      {/* Decorative gradient orb */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/20 blur-[100px] rounded-full pointer-events-none"></div>
-      
-      <div className="container mx-auto px-6 text-center max-w-2xl relative z-10">
-        <motion.h2 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-4xl md:text-5xl font-bold mb-6 text-white"
-        >
-          Let's Build the Future
-        </motion.h2>
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
-          className="text-gray-400 mb-12 text-lg leading-relaxed"
-        >
-          I'm currently open for new opportunities. Whether you have a question or just want to discuss GenAI architectures, my inbox is open!
-        </motion.p>
+    <section id="contact" className="section-anchor">
+      <div className="section-shell">
         <motion.div
-           initial={{ opacity: 0, scale: 0.9 }}
-           whileInView={{ opacity: 1, scale: 1 }}
-           viewport={{ once: true }}
-           transition={{ delay: 0.2 }}
+          initial={{ opacity: 0, y: 26 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          className="surface-outline glass-panel relative overflow-hidden rounded-[2rem] px-6 py-12 text-center md:px-10 md:py-16"
         >
-          <a href="mailto:ajaychodankar15@gmail.com" className="inline-block px-10 py-4 bg-white text-black font-bold rounded-full hover:scale-105 active:scale-95 transition-transform shadow-[0_0_40px_rgba(255,255,255,0.2)]">
-            Say Hello
-          </a>
+          <div className="absolute inset-x-[18%] top-[-5rem] h-40 rounded-full bg-[radial-gradient(circle,rgba(124,140,255,0.26),transparent_70%)] blur-3xl" />
+
+          <span className="section-kicker">Contact</span>
+          <h2 className="section-title mt-5 gradient-text">Let&apos;s Connect!</h2>
+          <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-300 md:text-lg">
+            I&apos;m always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
+          </p>
+
+          <div className="mx-auto mt-10 flex max-w-4xl flex-wrap items-center justify-center gap-3">
+            {contactLinks.map(({ href, label, icon: Icon }) => (
+              <a
+                key={label}
+                href={href}
+                className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm text-slate-200 transition hover:-translate-y-0.5 hover:border-cyan-300/20 hover:bg-white/[0.06]"
+              >
+                <Icon size={16} className="text-cyan-300" />
+                <span>{label}</span>
+              </a>
+            ))}
+          </div>
+
+          <div className="mt-10 flex justify-center gap-3">
+            {socialLinks.map(({ href, label, icon: Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target={href.startsWith("http") ? "_blank" : undefined}
+                rel={href.startsWith("http") ? "noreferrer" : undefined}
+                className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-slate-100 transition hover:-translate-y-0.5 hover:border-indigo-300/20 hover:bg-indigo-400/12"
+                aria-label={label}
+                title={label}
+              >
+                <Icon size={18} />
+              </a>
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>

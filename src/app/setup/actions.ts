@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { getDefaultSiteSettings } from "@/lib/site-settings";
 
 export async function setupAdmin(formData: FormData) {
   // Prevent any creation if a user already exists (Security)
@@ -28,6 +29,30 @@ export async function setupAdmin(formData: FormData) {
     }
   });
 
-  // Redirect to the sign in page so they can log in
-  redirect("/api/auth/signin");
+  const settings = await prisma.settings.findFirst();
+  const defaults = getDefaultSiteSettings();
+  const displayName = name?.trim() || username.trim();
+
+  if (settings) {
+    await prisma.settings.update({
+      where: { id: settings.id },
+      data: {
+        heroTitle: settings.heroTitle || displayName,
+        heroRole: settings.heroRole || defaults.heroRole,
+        heroSpecialties: settings.heroSpecialties || defaults.heroSpecialties,
+      },
+    });
+  } else {
+    await prisma.settings.create({
+      data: {
+        isSeeded: true,
+        heroTitle: displayName,
+        heroRole: defaults.heroRole,
+        heroSpecialties: defaults.heroSpecialties,
+      },
+    });
+  }
+
+  // Redirect to the sign-in page and return to admin after login.
+  redirect("/api/auth/signin?callbackUrl=/admin");
 }

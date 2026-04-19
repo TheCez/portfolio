@@ -2,11 +2,13 @@ import { prisma } from "@/lib/prisma";
 import { setupAdmin } from "./actions";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default async function SetupPage() {
   // Check if a user already exists (Security)
   const count = await prisma.user.count();
   if (count > 0) {
-    redirect("/api/auth/signin"); // If admin already exists, skip setup and login
+    redirect("/admin");
   }
 
   return (
@@ -14,7 +16,7 @@ export default async function SetupPage() {
       <div className="max-w-md w-full bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600 mb-2">Welcome!</h1>
-          <p className="text-gray-400">Let's set up your Admin credentials for the first time.</p>
+          <p className="text-gray-400">Let&apos;s set up your admin credentials for the first time. Until this is completed, the portfolio website stays locked.</p>
         </div>
 
         <form action={setupAdmin} className="space-y-5">

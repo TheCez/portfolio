@@ -1,27 +1,34 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Briefcase, Code, GraduationCap, Trophy } from "lucide-react";
+import { Briefcase, Code, GraduationCap, Trophy, Settings, BrainCircuit, MessageSquareQuote } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const [expCount, projectCount, eduCount, achCount] = await Promise.all([
+  const [expCount, projectCount, eduCount, achCount, skillCount, referenceCount] = await Promise.all([
     prisma.experience.count(),
     prisma.project.count(),
     prisma.education.count(),
-    prisma.achievement.count()
+    prisma.achievement.count(),
+    prisma.skill.count(),
+    prisma.reference.count(),
   ]);
 
   const stats = [
     { title: "Experiences", count: expCount, icon: Briefcase, color: "text-blue-500", bg: "bg-blue-500/10", link: "/admin/experience" },
     { title: "Projects", count: projectCount, icon: Code, color: "text-purple-500", bg: "bg-purple-500/10", link: "/admin/projects" },
+    { title: "Skills", count: skillCount, icon: BrainCircuit, color: "text-cyan-500", bg: "bg-cyan-500/10", link: "/admin/skills" },
     { title: "Education", count: eduCount, icon: GraduationCap, color: "text-green-500", bg: "bg-green-500/10", link: "/admin/education" },
     { title: "Achievements", count: achCount, icon: Trophy, color: "text-yellow-500", bg: "bg-yellow-500/10", link: "/admin/achievements" },
+    { title: "References", count: referenceCount, icon: MessageSquareQuote, color: "text-pink-500", bg: "bg-pink-500/10", link: "/admin/references" },
+    { title: "Site Settings", count: 1, icon: Settings, color: "text-indigo-500", bg: "bg-indigo-500/10", link: "/admin/settings" },
   ];
 
   return (
     <div>
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Dashboard Overview</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-6 mb-12">
         {stats.map((s, i) => (
           <Link href={s.link} key={i}>
             <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">

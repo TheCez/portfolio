@@ -1,81 +1,212 @@
 import { prisma } from "@/lib/prisma";
-import { addProject, deleteProject } from "../actions";
+import AdminFileDropInput from "@/components/admin/AdminFileDropInput";
+import AdminSortableList from "@/components/admin/AdminSortableList";
+import { addProject, deleteProject, reorderProjects, updateProject } from "../actions";
+import { isStorageConfigured } from "@/lib/storage";
+
+export const dynamic = "force-dynamic";
+
+function formatHighlights(value: string) {
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return parsed.join("\n");
+    }
+  } catch {
+    // Fall back below.
+  }
+
+  return value;
+}
 
 export default async function AdminProjects() {
-  const projects = await prisma.project.findMany({
-    orderBy: { order: "asc" }
-  });
+  const [projects, storageReady] = await Promise.all([
+    prisma.project.findMany({
+      orderBy: { order: "asc" },
+    }),
+    Promise.resolve(isStorageConfigured()),
+  ]);
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Manage Projects</h1>
-      
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* ADD NEW PROJECT FORM */}
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 h-fit">
-          <h2 className="text-xl font-bold mb-4">Add New Project</h2>
+    <div className="space-y-8">
+      <div>
+        <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">Manage Projects</h1>
+        <p className="text-gray-500 dark:text-gray-400">
+          Add or update projects with either direct links or uploaded media. Uploaded files are stored in MinIO / S3-compatible storage.
+        </p>
+      </div>
+
+      <div
+        className={`rounded-xl border p-4 text-sm ${
+          storageReady
+            ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-900/10 dark:text-emerald-300"
+            : "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-900/10 dark:text-amber-300"
+        }`}
+      >
+        {storageReady
+          ? "Storage is configured. You can upload project images and demo videos from this page."
+          : "Storage is not configured. URL fields still work, but uploads need the MinIO/S3 env vars enabled."}
+      </div>
+
+      <AdminSortableList
+        label="Project Order"
+        items={projects.map((project) => ({
+          id: project.id,
+          title: project.title,
+          subtitle: project.techTags,
+        }))}
+        reorderAction={reorderProjects}
+      />
+
+      <div className="grid gap-8 xl:grid-cols-[0.95fr_1.25fr]">
+        <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+          <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Add New Project</h2>
           <form action={addProject} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
-              <input name="title" required className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent dark:text-white" />
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+              <input name="title" required className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-              <textarea name="description" required rows={2} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent dark:text-white"></textarea>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+              <textarea name="description" required rows={3} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
             </div>
-            
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Order</label>
+                <input name="order" type="number" min="0" placeholder="Auto" className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Repo URL</label>
+                <input name="repoUrl" type="url" className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+              </div>
+            </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tech Tags (comma separated)</label>
-              <input name="techTags" required placeholder="React, Node, Tailwind" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent dark:text-white" />
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Tech Tags (comma separated)</label>
+              <input name="techTags" required placeholder="React, Next.js, Prisma" className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
             </div>
-            
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Image URL</label>
+                <input name="imageUrl" placeholder="https://... or /api/media/..." className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+              </div>
+              <AdminFileDropInput name="imageFile" accept="image/*" label="Upload Image" helperText="Drop a project image here or click to browse." />
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Video / Demo URL</label>
+                <input name="videoUrl" placeholder="https://... or /api/media/..." className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+              </div>
+              <AdminFileDropInput name="videoFile" accept="video/*" label="Upload Video" helperText="Drop a video file here or click to browse." />
+            </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Repo URL (optional)</label>
-              <input name="repoUrl" type="url" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent dark:text-white" />
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Highlights (one per line)</label>
+              <textarea name="highlights" rows={5} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
             </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Video/Media URL (optional)</label>
-              <input name="videoUrl" placeholder="/assets/videos/demo.mp4 or https://youtube..." className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent dark:text-white" />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Highlights (one per line)</label>
-              <textarea name="highlights" rows={3} placeholder="- Built full stack app&#10;- Integrated AI..." className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent dark:text-white"></textarea>
-            </div>
-            
-            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-md transition-colors">
+
+            <button type="submit" className="w-full rounded-md bg-indigo-600 py-2 font-medium text-white transition-colors hover:bg-indigo-700">
               Save Project
             </button>
           </form>
-        </div>
+        </section>
 
-        {/* LIST EXISTING PROJECTS */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold mb-4">Existing Projects ({projects.length})</h2>
-          {projects.map(proj => (
-            <div key={proj.id} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 rounded-xl flex justify-between items-start">
-              <div>
-                <h3 className="font-bold text-gray-900 dark:text-white">{proj.title}</h3>
-                <p className="text-sm text-gray-500 line-clamp-1 mt-1">{proj.description}</p>
-                <div className="mt-2 flex gap-2">
-                  <span className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-gray-600 dark:text-gray-300 break-all w-fit max-w-[200px] line-clamp-1">{proj.techTags}</span>
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Existing Projects ({projects.length})</h2>
+          {projects.map((project) => (
+            <details key={project.id} className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+              <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-white">{project.title}</h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Order {project.order} · {project.techTags}</p>
                 </div>
-              </div>
-              <form action={async () => {
-                "use server";
-                await deleteProject(proj.id);
-              }}>
-                <button type="submit" className="text-red-500 hover:text-red-600 text-sm font-medium border border-red-500/20 px-3 py-1 rounded">Delete</button>
-              </form>
-            </div>
-          ))}
-          {projects.length === 0 && (
-            <p className="text-gray-500 italic">No projects added yet.</p>
-          )}
-        </div>
+                <span className="rounded-full border border-gray-200 px-3 py-1 text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                  Edit
+                </span>
+              </summary>
 
+              <div className="mt-5 space-y-4 border-t border-gray-200 pt-5 dark:border-gray-800">
+                <form
+                  action={async (formData) => {
+                    "use server";
+                    await updateProject(project.id, formData);
+                  }}
+                  className="space-y-4"
+                >
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+                    <input name="title" defaultValue={project.title} required className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+                    <textarea name="description" defaultValue={project.description} rows={3} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Order</label>
+                      <input name="order" type="number" min="0" defaultValue={project.order} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Repo URL</label>
+                      <input name="repoUrl" type="url" defaultValue={project.repoUrl ?? ""} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Tech Tags</label>
+                    <input name="techTags" defaultValue={project.techTags} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Image URL</label>
+                      <input name="imageUrl" defaultValue={project.imageUrl ?? ""} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+                    </div>
+                    <AdminFileDropInput name="imageFile" accept="image/*" label="Upload New Image" helperText="Drag a replacement image here or click to browse." />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Video / Demo URL</label>
+                      <input name="videoUrl" defaultValue={project.videoUrl ?? ""} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+                    </div>
+                    <AdminFileDropInput name="videoFile" accept="video/*" label="Upload New Video" helperText="Drag a replacement video here or click to browse." />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Highlights</label>
+                    <textarea name="highlights" rows={5} defaultValue={formatHighlights(project.highlights)} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    <button type="submit" className="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white transition-colors hover:bg-indigo-700">
+                      Update Project
+                    </button>
+                  </div>
+                </form>
+
+                <form
+                  action={async () => {
+                    "use server";
+                    await deleteProject(project.id);
+                  }}
+                >
+                  <button type="submit" className="rounded-md border border-red-500/20 px-4 py-2 text-sm font-medium text-red-500 transition hover:bg-red-50 dark:hover:bg-red-900/20">
+                    Delete Project
+                  </button>
+                </form>
+              </div>
+            </details>
+          ))}
+
+          {projects.length === 0 ? <p className="italic text-gray-500">No projects added yet.</p> : null}
+        </section>
       </div>
     </div>
   );
