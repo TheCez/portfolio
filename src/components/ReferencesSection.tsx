@@ -35,7 +35,7 @@ export default function ReferencesSection({ references }: { references: Referenc
   return (
     <section id="references" className="section-anchor">
       <div className="section-shell">
-        <div className="mb-14 text-center">
+        <div className="mb-10 text-center sm:mb-14">
           <span className="section-kicker">References</span>
           <h2 className="section-title mt-5 gradient-text">What collaborators said about the work</h2>
         </div>
@@ -52,7 +52,7 @@ export default function ReferencesSection({ references }: { references: Referenc
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ delay: idx * 0.06 }}
-                className={`surface-outline glass-panel rounded-[1.8rem] p-7 ${reference.isFeatured ? "ring-1 ring-cyan-300/20" : ""}`}
+                className={`surface-outline glass-panel rounded-[1.8rem] p-5 sm:p-7 ${reference.isFeatured ? "ring-1 ring-cyan-300/20" : ""}`}
               >
                 <div className="mb-5 flex items-start justify-between gap-4">
                   <div className="inline-flex rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-cyan-300">
@@ -73,7 +73,7 @@ export default function ReferencesSection({ references }: { references: Referenc
                   </div>
                 ) : null}
 
-                <p className="mb-6 whitespace-pre-line text-lg leading-8 text-slate-100/92">"{reference.quote}"</p>
+                <p className="mb-6 whitespace-pre-line text-base leading-7 text-slate-100/92 sm:text-lg sm:leading-8">"{reference.quote}"</p>
 
                 <div className="flex items-center gap-4">
                   <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/[0.04] text-slate-300">

@@ -29,7 +29,7 @@ export default function EducationSection({ education }: { education: Education[]
   return (
     <section id="education" className="section-anchor">
       <div className="section-shell">
-        <div className="mb-14 text-center">
+        <div className="mb-10 text-center sm:mb-14">
           <span className="section-kicker">Education</span>
           <h2 className="section-title mt-5 gradient-text">Academic grounding behind the applied work</h2>
         </div>
@@ -52,7 +52,7 @@ export default function EducationSection({ education }: { education: Education[]
                       onClick: () => setSelectedEducation(item),
                     }
                   : {})}
-                className={`surface-outline glass-panel relative overflow-hidden rounded-[1.8rem] p-7 text-left ${
+                className={`surface-outline glass-panel relative overflow-hidden rounded-[1.8rem] p-5 text-left sm:p-7 ${
                   hasImage
                     ? "cursor-pointer transition hover:-translate-y-1.5 hover:[box-shadow:0_28px_90px_rgba(3,8,20,0.55),0_0_40px_rgba(124,140,255,0.18)]"
                     : ""
@@ -62,8 +62,8 @@ export default function EducationSection({ education }: { education: Education[]
                   {idx === 0 ? <GraduationCap size={22} /> : <ScrollText size={22} />}
                 </div>
                 <p className="mb-4 font-mono text-sm text-cyan-300">{item.dates}</p>
-                <h3 className="mb-2 max-w-[85%] text-2xl font-semibold text-white">{item.degree}</h3>
-                <p className="mb-6 text-lg text-slate-300">{item.university}</p>
+                <h3 className="mb-2 max-w-[85%] text-xl font-semibold text-white sm:text-2xl">{item.degree}</h3>
+                <p className="mb-5 text-base text-slate-300 sm:mb-6 sm:text-lg">{item.university}</p>
 
                 <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.03] px-4 py-4 text-sm text-slate-300">
                   <div className="space-y-2">

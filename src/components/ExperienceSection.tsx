@@ -33,7 +33,7 @@ export default function ExperienceSection({ experiences }: { experiences: Experi
   return (
     <section id="experience" className="section-anchor">
       <div className="section-shell">
-        <div className="mb-16 text-center">
+        <div className="mb-10 text-center sm:mb-16">
           <span className="section-kicker">Experience</span>
           <h2 className="section-title mt-5 gradient-text">Research, engineering, and shipping under constraints</h2>
         </div>
@@ -55,14 +55,14 @@ export default function ExperienceSection({ experiences }: { experiences: Experi
                   className={`relative lg:grid lg:grid-cols-2 ${idx % 2 === 1 ? "lg:[&>*:first-child]:col-start-2" : ""}`}
                 >
                   <div className="relative">
-                    <div className="surface-outline glass-panel rounded-[1.8rem] p-6 md:p-8 lg:mx-7">
+                    <div className="surface-outline glass-panel rounded-[1.8rem] p-5 sm:p-6 md:p-8 lg:mx-7">
                       <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
                         <div>
                           <p className="mb-3 font-mono text-sm text-cyan-300">
                             {exp.startDate} - {exp.endDate || "Present"}
                           </p>
-                          <h3 className="text-2xl font-semibold text-white">{exp.role}</h3>
-                          <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-slate-400">
+                          <h3 className="text-xl font-semibold text-white sm:text-2xl">{exp.role}</h3>
+                          <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-400 sm:gap-4">
                             <span className="inline-flex items-center gap-2">
                               <Building2 size={15} className="text-indigo-300" />
                               {exp.company}
@@ -79,7 +79,7 @@ export default function ExperienceSection({ experiences }: { experiences: Experi
 
                       <ul className="space-y-3">
                         {items.map((item) => (
-                          <li key={item} className="flex gap-3 text-sm leading-7 text-slate-300 md:text-[0.97rem]">
+                          <li key={item} className="flex gap-3 text-sm leading-6 text-slate-300 md:text-[0.97rem] md:leading-7">
                             <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-cyan-300 shadow-[0_0_14px_rgba(103,232,249,0.7)]" />
                             <span>{item}</span>
                           </li>

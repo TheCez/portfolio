@@ -133,8 +133,9 @@ textarea {
 
 .section-title {
   font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1;
+  line-height: 1.05;
   letter-spacing: -0.04em;
+  text-wrap: balance;
 }
 
 .section-kicker {
@@ -197,7 +198,36 @@ textarea {
 
 @media (max-width: 768px) {
   .section-shell {
-    width: min(100% - 1.25rem, 1180px);
-    padding: 4.5rem 0;
+    width: min(100% - 1rem, 1180px);
+    padding: 4rem 0;
+  }
+
+  .section-title {
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+    line-height: 1.12;
+  }
+
+  .section-kicker {
+    gap: 0.5rem;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-shell {
+    width: min(100% - 0.75rem, 1180px);
+    padding: 3.4rem 0;
+  }
+
+  .section-title {
+    font-size: clamp(1.65rem, 7.6vw, 2.15rem);
+  }
+
+  .section-kicker {
+    max-width: 100%;
+    justify-content: center;
+    text-align: center;
   }
 }

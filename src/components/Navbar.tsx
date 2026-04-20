@@ -32,14 +32,14 @@ export default function Navbar({ badge }: { badge: string }) {
     <motion.header
       initial={{ y: -120, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="fixed inset-x-0 top-4 z-50"
+      className="fixed inset-x-0 top-3 z-50 md:top-4"
     >
       <div
-        className="mx-auto flex w-[min(1100px,calc(100%-1.5rem))] items-center justify-between rounded-[1.35rem] border border-white/10 bg-[#172235]/88 px-4 py-3 shadow-[0_12px_32px_rgba(0,0,0,0.2)] backdrop-blur-xl transition-all duration-300 md:px-6"
+        className="mx-auto flex w-[min(1100px,calc(100%-0.8rem))] items-center justify-between rounded-[1.15rem] border border-white/10 bg-[#172235]/88 px-3 py-2.5 shadow-[0_12px_32px_rgba(0,0,0,0.2)] backdrop-blur-xl transition-all duration-300 md:w-[min(1100px,calc(100%-1.5rem))] md:rounded-[1.35rem] md:px-6 md:py-3"
       >
         <a
           href="#home"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/35 text-center text-sm font-medium uppercase leading-none tracking-[0.12em] text-white transition hover:border-white/45 hover:bg-white/5"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/35 text-center text-[0.78rem] font-medium uppercase leading-none tracking-[0.12em] text-white transition hover:border-white/45 hover:bg-white/5 md:h-11 md:w-11 md:text-sm"
         >
           {badge}
         </a>
@@ -60,7 +60,7 @@ export default function Navbar({ badge }: { badge: string }) {
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10 md:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10 md:hidden"
           aria-label={open ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={open}
         >
@@ -74,7 +74,7 @@ export default function Navbar({ badge }: { badge: string }) {
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            className="mx-auto mt-3 w-[min(1100px,calc(100%-1.5rem))] rounded-[1.35rem] border border-white/10 bg-slate-950/88 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-2xl md:hidden"
+            className="mx-auto mt-2.5 w-[min(1100px,calc(100%-0.8rem))] rounded-[1.15rem] border border-white/10 bg-slate-950/88 p-3 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-2xl md:hidden"
           >
             <nav className="flex flex-col gap-1">
               {links.map((link) => (

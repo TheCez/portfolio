@@ -57,15 +57,15 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
   return (
     <section id="projects" className="section-anchor">
       <div className="section-shell">
-        <div className="mb-16 text-center">
+        <div className="mb-10 text-center sm:mb-16">
           <span className="section-kicker">Projects</span>
           <h2 className="section-title mt-5 gradient-text">The same bold project storytelling, now fully data-driven</h2>
-          <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-400">
+          <p className="mx-auto mt-4 max-w-3xl px-2 text-sm leading-7 text-slate-400 sm:mt-5 sm:text-base sm:leading-8">
             Click any project for a better case-study view with media, highlights, and clean formatting from the admin panel.
           </p>
         </div>
 
-        <div className="grid gap-7 lg:grid-cols-3">
+        <div className="grid gap-5 sm:gap-7 lg:grid-cols-3">
           {projects.map((project, idx) => {
             const techTags = project.techTags.split(",").map((tag) => tag.trim()).filter(Boolean);
             const highlights = parseHighlights(project.highlights);
@@ -94,8 +94,8 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                   </div>
                 </div>
 
-                <div className="flex flex-1 flex-col p-6">
-                  <h3 className="mb-3 text-2xl font-semibold text-white transition group-hover:text-cyan-200">
+                <div className="flex flex-1 flex-col p-5 sm:p-6">
+                  <h3 className="mb-3 text-xl font-semibold text-white transition group-hover:text-cyan-200 sm:text-2xl">
                     {project.title}
                   </h3>
                   <p className="mb-5 text-sm leading-7 text-slate-300">{project.description}</p>
@@ -133,7 +133,7 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
 
       {selectedProject ? (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/75 px-4 backdrop-blur-md">
-          <div className="surface-outline glass-panel relative max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-[2rem] p-5 md:p-7">
+          <div className="surface-outline glass-panel relative max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-[1.6rem] p-4 sm:rounded-[2rem] sm:p-5 md:p-7">
             <button
               type="button"
               onClick={() => setSelectedId(null)}
@@ -174,8 +174,8 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
               </div>
 
               <div className="flex flex-col">
-                <h3 className="mb-3 text-3xl font-semibold text-white">{selectedProject.title}</h3>
-                <p className="mb-5 text-base leading-8 text-slate-300">{selectedProject.description}</p>
+                <h3 className="mb-3 text-2xl font-semibold text-white sm:text-3xl">{selectedProject.title}</h3>
+                <p className="mb-5 text-sm leading-7 text-slate-300 sm:text-base sm:leading-8">{selectedProject.description}</p>
 
                 <div className="mb-6 flex flex-wrap gap-2.5">
                   {selectedProject.techTags

@@ -42,15 +42,15 @@ export default function SkillsSection({ skills }: { skills: SkillRecord[] }) {
   return (
     <section id="skills" className="section-anchor">
       <div className="section-shell">
-        <div className="mb-14 text-center">
+        <div className="mb-10 text-center sm:mb-14">
           <span className="section-kicker">Skills</span>
           <h2 className="section-title mt-5 gradient-text">The stack behind the ideas</h2>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-400">
+          <p className="mx-auto mt-4 max-w-2xl px-2 text-sm leading-7 text-slate-400 sm:mt-5 sm:text-base sm:leading-8">
             The original site&apos;s skill matrix worked because it made the portfolio feel multidimensional. I kept that rhythm and made it dynamic-friendly.
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
           {groups.map((group, idx) => {
             const Icon = iconMap[group.category] ?? BrainCircuit;
 
@@ -61,13 +61,13 @@ export default function SkillsSection({ skills }: { skills: SkillRecord[] }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ delay: idx * 0.05 }}
-                className="surface-outline glass-panel rounded-[1.8rem] p-6 transition hover:-translate-y-1.5 hover:[box-shadow:0_28px_90px_rgba(3,8,20,0.55),0_0_40px_rgba(124,140,255,0.18)]"
+                className="surface-outline glass-panel rounded-[1.8rem] p-5 transition hover:-translate-y-1.5 hover:[box-shadow:0_28px_90px_rgba(3,8,20,0.55),0_0_40px_rgba(124,140,255,0.18)] sm:p-6"
               >
                 <div className="mb-5 flex items-center gap-3">
                   <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
                     <Icon size={19} className="text-cyan-300" />
                   </div>
-                  <h3 className="text-xl font-semibold text-white">{group.category}</h3>
+                  <h3 className="text-lg font-semibold text-white sm:text-xl">{group.category}</h3>
                 </div>
                 <div className="flex flex-wrap gap-2.5">
                   {group.tags.map((tag) => (

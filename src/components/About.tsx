@@ -36,17 +36,17 @@ export default function About({ content }: { content: AboutContent }) {
   return (
     <section id="about" className="section-anchor">
       <div className="section-shell">
-        <div className="mb-14 text-center">
+        <div className="mb-10 text-center sm:mb-14">
           <span className="section-kicker">About Me</span>
-          <h2 className="section-title mt-5 gradient-text">A research mindset with an engineer&apos;s delivery discipline</h2>
+          <h2 className="section-title mt-4 px-2 gradient-text sm:mt-5">A research mindset with an engineer&apos;s delivery discipline</h2>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[0.72fr_1.45fr] lg:items-start">
+        <div className="grid gap-6 lg:grid-cols-[0.72fr_1.45fr] lg:items-start lg:gap-8">
           <motion.div
             initial={{ opacity: 0, x: -26 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.25 }}
-            className="relative mx-auto w-full max-w-[28rem] lg:mx-0"
+            className="relative mx-auto w-full max-w-[22rem] sm:max-w-[26rem] lg:mx-0 lg:max-w-[28rem]"
           >
             <div className="floating-orb left-1/2 top-10 h-28 w-48 -translate-x-1/2 bg-[radial-gradient(circle,rgba(124,140,255,0.34),transparent_72%)]" />
             <div className="surface-outline glass-panel relative overflow-hidden rounded-[2rem] p-3">
@@ -64,12 +64,12 @@ export default function About({ content }: { content: AboutContent }) {
             initial={{ opacity: 0, x: 26 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.25 }}
-            className="surface-outline glass-panel rounded-[2rem] p-7 md:p-10"
+            className="surface-outline glass-panel rounded-[2rem] p-5 sm:p-7 md:p-10"
           >
-            <h3 className="mb-5 text-2xl font-semibold text-white">{content.aboutTitle}</h3>
-            <div className="mb-9 space-y-5">
+            <h3 className="mb-4 text-center text-xl font-semibold text-white sm:mb-5 sm:text-left sm:text-2xl">{content.aboutTitle}</h3>
+            <div className="mb-7 space-y-4 sm:mb-9 sm:space-y-5">
               {content.aboutParagraphs.map((paragraph) => (
-                <p key={paragraph} className="text-lg leading-8 text-slate-300">
+                <p key={paragraph} className="text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">
                   {paragraph}
                 </p>
               ))}
@@ -79,7 +79,7 @@ export default function About({ content }: { content: AboutContent }) {
               {highlights.map(({ icon: Icon, title, text }) => (
                 <div
                   key={title}
-                  className="rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-5 transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.05]"
+                  className="rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4 transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.05] sm:p-5"
                 >
                   <Icon size={20} className="mb-3 text-cyan-300" />
                   <h3 className="mb-2 text-base font-semibold text-white">{title}</h3>

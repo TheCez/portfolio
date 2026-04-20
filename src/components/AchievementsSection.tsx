@@ -36,7 +36,7 @@ export default function AchievementsSection({ achievements }: { achievements: Ac
   return (
     <section id="achievements" className="section-anchor">
       <div className="section-shell">
-        <div className="mb-14 text-center">
+        <div className="mb-10 text-center sm:mb-14">
           <span className="section-kicker">Achievements</span>
           <h2 className="section-title mt-5 gradient-text">Achievements &amp; Certifications</h2>
         </div>
@@ -60,7 +60,7 @@ export default function AchievementsSection({ achievements }: { achievements: Ac
                       onClick: () => setSelectedAchievement(achievement),
                     }
                   : {})}
-                className={`surface-outline glass-panel rounded-[1.6rem] p-6 text-left transition ${
+                className={`surface-outline glass-panel rounded-[1.6rem] p-5 text-left transition sm:p-6 ${
                   hasImage
                     ? "cursor-pointer hover:-translate-y-1.5 hover:[box-shadow:0_28px_90px_rgba(3,8,20,0.55),0_0_40px_rgba(124,140,255,0.18)]"
                     : ""
@@ -77,7 +77,7 @@ export default function AchievementsSection({ achievements }: { achievements: Ac
                     </div>
                   ) : null}
                 </div>
-                <h3 className="mb-2 text-xl font-semibold text-white">{achievement.title}</h3>
+                <h3 className="mb-2 text-lg font-semibold text-white sm:text-xl">{achievement.title}</h3>
                 <p className="whitespace-pre-line text-sm leading-7 text-slate-400">{achievement.event}</p>
                 {hasImage ? (
                   <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-cyan-200">
