@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import AppShellFrame from "@/components/AppShellFrame";
@@ -21,6 +21,17 @@ export const metadata: Metadata = {
   title: "Ajay Chodankar | AI Researcher & Software Engineer",
   description:
     "AI Researcher and software engineer building agentic AI systems, computer vision products, and cloud-native platforms.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  interactiveWidget: "resizes-content",
+  themeColor: "#07111f",
+  colorScheme: "dark",
 };
 
 export default async function RootLayout({
