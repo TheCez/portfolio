@@ -29,7 +29,7 @@ export default async function AdminReferencesPage() {
         }`}
       >
         {storageReady
-          ? "Storage is configured. You can upload recommender photos directly from this page."
+          ? "Storage is configured. You can upload recommender photos directly from this page. Uploads replace the saved URL, and leaving the URL blank with no upload clears it."
           : "Storage is not configured. Photo URL fields still work, but uploads need the MinIO/S3 env vars enabled."}
       </div>
 

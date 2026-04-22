@@ -41,7 +41,7 @@ export default async function AdminAchievementsPage() {
         }`}
       >
         {storageReady
-          ? "Storage is configured. You can upload achievement images here or paste a direct image URL."
+          ? "Storage is configured. You can upload achievement images here or paste a direct image URL. Uploads replace the saved URL, and leaving the URL blank with no upload clears it."
           : "Storage is not configured. URL fields still work, but uploads need the MinIO/S3 env vars enabled."}
       </div>
 

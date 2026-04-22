@@ -28,7 +28,7 @@ export default async function AdminSettingsPage() {
         }`}
       >
         {storageReady
-          ? "MinIO / S3-compatible storage is configured. You can upload files directly from this panel."
+          ? "MinIO / S3-compatible storage is configured. You can upload files directly from this panel. Uploads replace saved URLs, and leaving the image URL blank with no upload clears it."
           : "Storage is not configured yet. URL fields will work, but file uploads will be disabled until the storage env vars are present."}
       </div>
 
@@ -97,7 +97,7 @@ export default async function AdminSettingsPage() {
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Current / External Image URL</label>
                 <input
                   name="profileImageUrl"
-                  defaultValue={settings.profileImageUrl ?? defaults.profileImageUrl}
+                  defaultValue={settings.profileImageUrl ?? ""}
                   className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white"
                 />
               </div>
@@ -105,7 +105,7 @@ export default async function AdminSettingsPage() {
                 <AdminFileDropInput name="profileImageFile" accept="image/*" label="Upload New Profile Image" helperText="Drop a profile image here or click to browse." />
               </div>
               <div className="rounded-lg border border-gray-200 p-3 text-xs text-gray-500 dark:border-gray-800 dark:text-gray-400">
-                Uploading a file will replace the URL value for the live site.
+                Uploading a file replaces the saved URL. If you leave the URL blank and do not upload a file, the saved profile image is cleared and the site falls back to the default placeholder image.
               </div>
             </div>
           </section>

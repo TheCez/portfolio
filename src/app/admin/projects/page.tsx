@@ -44,7 +44,7 @@ export default async function AdminProjects() {
         }`}
       >
         {storageReady
-          ? "Storage is configured. You can upload project images and demo videos from this page."
+          ? "Storage is configured. You can upload project images and demo videos from this page. Uploads replace saved URLs, and leaving a media URL blank with no upload clears it."
           : "Storage is not configured. URL fields still work, but uploads need the MinIO/S3 env vars enabled."}
       </div>
 

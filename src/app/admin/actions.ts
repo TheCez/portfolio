@@ -60,7 +60,6 @@ async function resolveMediaField(
   fileField: string,
   urlField: string,
   folder: string,
-  fallback: string | null,
 ) {
   const url = normalizeText(formData.get(urlField));
   const file = formData.get(fileField);
@@ -76,7 +75,7 @@ async function resolveMediaField(
     return url;
   }
 
-  return fallback;
+  return null;
 }
 
 export async function addProject(formData: FormData) {
@@ -87,8 +86,8 @@ export async function addProject(formData: FormData) {
   const highlights = normalizeList(normalizeText(formData.get("highlights")));
   const orderValue = Number(normalizeText(formData.get("order")));
 
-  const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "projects/images", null);
-  const videoUrl = await resolveMediaField(formData, "videoFile", "videoUrl", "projects/videos", null);
+  const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "projects/images");
+  const videoUrl = await resolveMediaField(formData, "videoFile", "videoUrl", "projects/videos");
 
   const maxOrder = await prisma.project.aggregate({ _max: { order: true } });
 
@@ -116,8 +115,8 @@ export async function updateProject(id: string, formData: FormData) {
     throw new Error("Project not found.");
   }
 
-  const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "projects/images", existing.imageUrl ?? null);
-  const videoUrl = await resolveMediaField(formData, "videoFile", "videoUrl", "projects/videos", existing.videoUrl ?? null);
+  const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "projects/images");
+  const videoUrl = await resolveMediaField(formData, "videoFile", "videoUrl", "projects/videos");
   const orderValue = Number(normalizeText(formData.get("order")));
 
   await prisma.project.update({
@@ -163,7 +162,6 @@ export async function updateSiteSettings(formData: FormData) {
     "profileImageFile",
     "profileImageUrl",
     "site/profile",
-    settings.profileImageUrl ?? null,
   );
 
   const paragraphs = normalizeText(formData.get("aboutParagraphs"));
@@ -257,7 +255,7 @@ export async function reorderExperiences(ids: string[]) {
 export async function addEducation(formData: FormData) {
   const maxOrder = await prisma.education.aggregate({ _max: { order: true } });
   const orderValue = Number(normalizeText(formData.get("order")));
-  const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "education/certificates", null);
+  const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "education/certificates");
 
   await prisma.education.create({
     data: {
@@ -285,7 +283,6 @@ export async function updateEducation(id: string, formData: FormData) {
     "imageFile",
     "imageUrl",
     "education/certificates",
-    existing.imageUrl ?? null,
   );
 
   await prisma.education.update({
@@ -322,7 +319,7 @@ export async function reorderEducation(ids: string[]) {
 export async function addAchievement(formData: FormData) {
   const maxOrder = await prisma.achievement.aggregate({ _max: { order: true } });
   const orderValue = Number(normalizeText(formData.get("order")));
-  const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "achievements/certificates", null);
+  const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "achievements/certificates");
 
   await prisma.achievement.create({
     data: {
@@ -349,7 +346,6 @@ export async function updateAchievement(id: string, formData: FormData) {
     "imageFile",
     "imageUrl",
     "achievements/certificates",
-    existing.imageUrl ?? null,
   );
 
   await prisma.achievement.update({
@@ -385,7 +381,7 @@ export async function reorderAchievements(ids: string[]) {
 export async function addReference(formData: FormData) {
   const maxOrder = await prisma.reference.aggregate({ _max: { order: true } });
   const orderValue = Number(normalizeText(formData.get("order")));
-  const photoUrl = await resolveMediaField(formData, "photoFile", "photoUrl", "references/photos", null);
+  const photoUrl = await resolveMediaField(formData, "photoFile", "photoUrl", "references/photos");
 
   await prisma.reference.create({
     data: {
@@ -417,7 +413,6 @@ export async function updateReference(id: string, formData: FormData) {
     "photoFile",
     "photoUrl",
     "references/photos",
-    existing.photoUrl ?? null,
   );
 
   await prisma.reference.update({

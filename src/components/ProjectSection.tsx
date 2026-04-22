@@ -46,12 +46,46 @@ function isDirectVideo(url?: string | null) {
   return /\.(mp4|webm|ogg|mov|m4v)(\?|$)/i.test(url) || url.includes("/api/media/");
 }
 
+function getYoutubeEmbedUrl(url?: string | null) {
+  if (!url) return null;
+
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.replace(/^www\./, "").toLowerCase();
+
+    if (hostname === "youtube.com" || hostname === "m.youtube.com") {
+      const videoId = parsed.searchParams.get("v");
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    }
+
+    if (hostname === "youtu.be") {
+      const videoId = parsed.pathname.split("/").filter(Boolean)[0];
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    }
+
+    if (hostname === "youtube-nocookie.com") {
+      const segments = parsed.pathname.split("/").filter(Boolean);
+      const embedIndex = segments.indexOf("embed");
+      const videoId = embedIndex >= 0 ? segments[embedIndex + 1] : null;
+      return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : null;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 export default function ProjectSection({ projects }: { projects: Project[] }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const selectedProject = useMemo(
     () => projects.find((project) => project.id === selectedId) ?? null,
     [projects, selectedId],
+  );
+  const selectedProjectYoutubeEmbed = useMemo(
+    () => getYoutubeEmbedUrl(selectedProject?.videoUrl),
+    [selectedProject?.videoUrl],
   );
 
   useEffect(() => {
@@ -183,6 +217,17 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                       className="w-full rounded-[1.4rem] border border-white/10 bg-black"
                       src={selectedProject.videoUrl}
                     />
+                  ) : selectedProjectYoutubeEmbed ? (
+                    <div className="overflow-hidden rounded-[1.4rem] border border-white/10 bg-black">
+                      <iframe
+                        src={selectedProjectYoutubeEmbed}
+                        title={`${selectedProject.title} video demo`}
+                        className="aspect-video w-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                      />
+                    </div>
                   ) : (
                     <Link
                       href={selectedProject.videoUrl}
@@ -238,7 +283,7 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                       View Repository
                     </Link>
                   ) : null}
-                  {selectedProject.videoUrl && !isDirectVideo(selectedProject.videoUrl) ? (
+                  {selectedProject.videoUrl && !isDirectVideo(selectedProject.videoUrl) && !selectedProjectYoutubeEmbed ? (
                     <Link
                       href={selectedProject.videoUrl}
                       target="_blank"
