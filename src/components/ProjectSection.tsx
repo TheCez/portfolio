@@ -178,8 +178,8 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
       </div>
 
       {selectedProject ? (
-        <div className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-black/75 px-3 pb-4 pt-24 backdrop-blur-md sm:items-center sm:px-4 sm:py-4">
-          <div className="surface-outline glass-panel relative w-full max-w-5xl overflow-hidden rounded-[1.6rem] sm:max-h-[92vh] sm:overflow-y-auto sm:rounded-[2rem]">
+        <div className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-black/75 px-3 pb-4 pt-24 backdrop-blur-md sm:px-4 sm:pb-6 sm:pt-28">
+          <div className="surface-outline glass-panel relative w-full max-w-5xl overflow-hidden rounded-[1.6rem] sm:max-h-[calc(100vh-8.5rem)] sm:overflow-y-auto sm:rounded-[2rem]">
             <div className="sticky top-0 z-20 flex justify-end border-b border-white/10 bg-[#0c1526]/92 px-4 py-3 backdrop-blur-xl sm:hidden">
               <button
                 type="button"
