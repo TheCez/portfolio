@@ -40,12 +40,12 @@ export default async function Home() {
   }
 
   const [experiences, projects, education, achievements, skills, references, settings] = await Promise.all([
-    prisma.experience.findMany({ orderBy: { order: "asc" } }),
-    prisma.project.findMany({ orderBy: { order: "asc" } }),
-    prisma.education.findMany({ orderBy: { order: "asc" } }),
-    prisma.achievement.findMany({ orderBy: { order: "asc" } }),
-    prisma.skill.findMany({ orderBy: { order: "asc" } }),
-    prisma.reference.findMany({ orderBy: { order: "asc" } }),
+    prisma.experience.findMany({ where: { isEnabled: true }, orderBy: { order: "asc" } }),
+    prisma.project.findMany({ where: { isEnabled: true }, orderBy: { order: "asc" } }),
+    prisma.education.findMany({ where: { isEnabled: true }, orderBy: { order: "asc" } }),
+    prisma.achievement.findMany({ where: { isEnabled: true }, orderBy: { order: "asc" } }),
+    prisma.skill.findMany({ where: { isEnabled: true }, orderBy: { order: "asc" } }),
+    prisma.reference.findMany({ where: { isEnabled: true }, orderBy: { order: "asc" } }),
     getSiteSettings(),
   ]);
 

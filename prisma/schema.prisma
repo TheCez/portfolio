@@ -22,6 +22,7 @@ model Experience {
   startDate   String
   endDate     String?
   description String   // Can be markdown or JSON string of bullet points
+  isEnabled   Boolean  @default(true)
   order       Int      @default(0)
 }
 
@@ -34,6 +35,7 @@ model Project {
   videoUrl    String?  // Can be local path or external link
   techTags    String   // Comma separated tags
   highlights  String   // JSON string or markdown of bullet points
+  isEnabled   Boolean  @default(true)
   order       Int      @default(0)
 }
 
@@ -44,6 +46,7 @@ model Education {
   dates       String
   results     String
   imageUrl    String?
+  isEnabled   Boolean  @default(true)
   order       Int      @default(0)
 }
 
@@ -53,6 +56,7 @@ model Achievement {
   event       String
   icon        String   // Emoji or Font/Lucide icon name
   imageUrl    String?
+  isEnabled   Boolean  @default(true)
   order       Int      @default(0)
 }
 
@@ -67,6 +71,7 @@ model Reference {
   source      String?
   sourceUrl   String?
   isFeatured  Boolean  @default(false)
+  isEnabled   Boolean  @default(true)
   order       Int      @default(0)
 }
 
@@ -75,6 +80,7 @@ model Skill {
   category    String
   icon        String
   tags        String   // Comma separated
+  isEnabled   Boolean  @default(true)
   order       Int      @default(0)
 }
 

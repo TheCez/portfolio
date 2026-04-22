@@ -131,6 +131,10 @@ export default async function AdminReferencesPage() {
               <input id="isFeatured" name="isFeatured" type="checkbox" className="h-4 w-4 rounded border-gray-300 text-indigo-600" />
               <label htmlFor="isFeatured" className="text-sm text-gray-700 dark:text-gray-300">Feature this reference more prominently</label>
             </div>
+            <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-3 dark:border-gray-800">
+              <input id="reference-enabled" name="isEnabled" type="checkbox" defaultChecked className="h-4 w-4 rounded border-gray-300 text-indigo-600" />
+              <label htmlFor="reference-enabled" className="text-sm text-gray-700 dark:text-gray-300">Show this card on the website</label>
+            </div>
             <input
               name="order"
               type="number"
@@ -157,9 +161,14 @@ export default async function AdminReferencesPage() {
                     {[entry.role, entry.company].filter(Boolean).join(" · ")} · Order {entry.order}
                   </p>
                 </div>
-                <span className="rounded-full border border-gray-200 px-3 py-1 text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
-                  Edit
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className={`rounded-full border px-3 py-1 text-xs ${entry.isEnabled ? "border-emerald-300/30 text-emerald-500 dark:text-emerald-300" : "border-amber-300/30 text-amber-500 dark:text-amber-300"}`}>
+                    {entry.isEnabled ? "Live" : "Hidden"}
+                  </span>
+                  <span className="rounded-full border border-gray-200 px-3 py-1 text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                    Edit
+                  </span>
+                </div>
               </summary>
 
               <div className="mt-5 space-y-4 border-t border-gray-200 pt-5 dark:border-gray-800">
@@ -167,6 +176,7 @@ export default async function AdminReferencesPage() {
                   action={updateReference.bind(null, entry.id)}
                   className="space-y-4"
                   mediaFieldNames={["photoUrl"]}
+                  refreshOnSuccess
                 >
                   <textarea
                     name="quote"
@@ -227,6 +237,10 @@ export default async function AdminReferencesPage() {
                   <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-3 dark:border-gray-800">
                     <input id={`featured-${entry.id}`} name="isFeatured" type="checkbox" defaultChecked={entry.isFeatured} className="h-4 w-4 rounded border-gray-300 text-indigo-600" />
                     <label htmlFor={`featured-${entry.id}`} className="text-sm text-gray-700 dark:text-gray-300">Feature this reference</label>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-3 dark:border-gray-800">
+                    <input id={`reference-enabled-${entry.id}`} name="isEnabled" type="checkbox" defaultChecked={entry.isEnabled} className="h-4 w-4 rounded border-gray-300 text-indigo-600" />
+                    <label htmlFor={`reference-enabled-${entry.id}`} className="text-sm text-gray-700 dark:text-gray-300">Show this card on the website</label>
                   </div>
                   <input
                     name="order"

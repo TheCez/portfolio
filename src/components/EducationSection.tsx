@@ -36,8 +36,8 @@ export default function EducationSection({ education }: { education: Education[]
 
         <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
           {education.map((item, idx) => {
-            const hasImage = Boolean(item.imageUrl);
-            const Wrapper = hasImage ? motion.button : motion.article;
+            const hasAttachment = Boolean(item.imageUrl);
+            const Wrapper = hasAttachment ? motion.button : motion.article;
 
             return (
               <Wrapper
@@ -46,14 +46,14 @@ export default function EducationSection({ education }: { education: Education[]
                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
                 transition={{ delay: idx * 0.06 }}
-                {...(hasImage
+                {...(hasAttachment
                   ? {
                       type: "button" as const,
                       onClick: () => setSelectedEducation(item),
                     }
                   : {})}
                 className={`surface-outline glass-panel relative overflow-hidden rounded-[1.8rem] p-5 text-left sm:p-7 ${
-                  hasImage
+                  hasAttachment
                     ? "cursor-pointer transition hover:-translate-y-1.5 hover:[box-shadow:0_28px_90px_rgba(3,8,20,0.55),0_0_40px_rgba(124,140,255,0.18)]"
                     : ""
                 }`}
@@ -73,10 +73,10 @@ export default function EducationSection({ education }: { education: Education[]
                   </div>
                 </div>
 
-                {hasImage ? (
+                {hasAttachment ? (
                   <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/8 px-3 py-1.5 text-xs font-medium text-cyan-100/90">
                     <ImageIcon size={14} className="text-cyan-300" />
-                    Certificate attached
+                    Attachment available
                   </div>
                 ) : null}
               </Wrapper>
@@ -87,7 +87,7 @@ export default function EducationSection({ education }: { education: Education[]
 
       {selectedEducation?.imageUrl ? (
         <ImageLightbox
-          imageUrl={selectedEducation.imageUrl}
+          mediaUrl={selectedEducation.imageUrl}
           title={`${selectedEducation.degree} certificate`}
           onClose={() => setSelectedEducation(null)}
         />

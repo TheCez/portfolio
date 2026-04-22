@@ -4,12 +4,23 @@ import { useEffect } from "react";
 import { X } from "lucide-react";
 
 type ImageLightboxProps = {
-  imageUrl: string;
+  mediaUrl: string;
   title: string;
   onClose: () => void;
 };
 
-export default function ImageLightbox({ imageUrl, title, onClose }: ImageLightboxProps) {
+function isPdfFile(url: string) {
+  try {
+    const parsed = new URL(url, "http://localhost");
+    return parsed.pathname.toLowerCase().endsWith(".pdf");
+  } catch {
+    return url.toLowerCase().includes(".pdf");
+  }
+}
+
+export default function ImageLightbox({ mediaUrl, title, onClose }: ImageLightboxProps) {
+  const isPdf = isPdfFile(mediaUrl);
+
   useEffect(() => {
     const { body } = document;
     const previousOverflow = body.style.overflow;
@@ -50,11 +61,19 @@ export default function ImageLightbox({ imageUrl, title, onClose }: ImageLightbo
           </div>
 
           <div className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#040814] p-2 sm:p-3">
-            <img
-              src={imageUrl}
-              alt={title}
-              className="mx-auto max-h-[calc(100vh-15rem)] w-full rounded-[1rem] object-contain sm:max-h-[calc(100vh-17rem)]"
-            />
+            {isPdf ? (
+              <iframe
+                src={mediaUrl}
+                title={title}
+                className="h-[calc(100vh-15rem)] w-full rounded-[1rem] bg-white sm:h-[calc(100vh-17rem)]"
+              />
+            ) : (
+              <img
+                src={mediaUrl}
+                alt={title}
+                className="mx-auto max-h-[calc(100vh-15rem)] w-full rounded-[1rem] object-contain sm:max-h-[calc(100vh-17rem)]"
+              />
+            )}
           </div>
         </div>
       </div>

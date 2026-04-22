@@ -1,6 +1,6 @@
 "use client";
 
-import { FileImage, FileVideo, UploadCloud } from "lucide-react";
+import { FileImage, FileText, FileVideo, UploadCloud } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 
 type AdminFileDropInputProps = {
@@ -16,6 +16,8 @@ export default function AdminFileDropInput({ name, accept, label, helperText }: 
   const [dragging, setDragging] = useState(false);
   const [fileName, setFileName] = useState("");
   const isVideo = accept.includes("video");
+  const isDocument = accept.includes("pdf") || accept.includes("application/pdf");
+  const fileKind = isVideo ? "video" : isDocument ? "file" : "image";
 
   useEffect(() => {
     const input = inputRef.current;
@@ -60,7 +62,7 @@ export default function AdminFileDropInput({ name, accept, label, helperText }: 
             : "border-gray-300 bg-gray-50/70 hover:border-indigo-300 hover:bg-indigo-50/60 dark:border-gray-700 dark:bg-gray-950/50 dark:hover:border-indigo-400/30 dark:hover:bg-indigo-900/10"
         }`}
       >
-        <input
+          <input
           id={id}
           ref={inputRef}
           name={name}
@@ -71,11 +73,11 @@ export default function AdminFileDropInput({ name, accept, label, helperText }: 
         />
         <div className="flex items-center gap-3">
           <div className="rounded-xl border border-gray-200 bg-white p-3 text-indigo-500 dark:border-gray-700 dark:bg-gray-900">
-            {isVideo ? <FileVideo size={18} /> : <FileImage size={18} />}
+            {isVideo ? <FileVideo size={18} /> : isDocument ? <FileText size={18} /> : <FileImage size={18} />}
           </div>
           <div className="min-w-0">
             <p className="font-medium text-gray-900 dark:text-white">
-              {fileName || `Drop ${isVideo ? "video" : "image"} here or click to upload`}
+              {fileName || `Drop ${fileKind} here or click to upload`}
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {helperText ?? "Drag and drop works here."}

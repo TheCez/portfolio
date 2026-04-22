@@ -49,6 +49,10 @@ export default async function AdminExperiencePage() {
               <input name="endDate" placeholder="Present" className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
             </div>
             <textarea name="description" required rows={6} placeholder="One bullet point per line" className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+            <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-3 dark:border-gray-800">
+              <input id="experience-enabled" name="isEnabled" type="checkbox" defaultChecked className="h-4 w-4 rounded border-gray-300 text-indigo-600" />
+              <label htmlFor="experience-enabled" className="text-sm text-gray-700 dark:text-gray-300">Show this card on the website</label>
+            </div>
             <button type="submit" className="w-full rounded-md bg-indigo-600 py-2 font-medium text-white hover:bg-indigo-700">Save Experience</button>
           </form>
         </section>
@@ -62,7 +66,12 @@ export default async function AdminExperiencePage() {
                   <h3 className="font-bold text-gray-900 dark:text-white">{experience.role}</h3>
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{experience.company} · Order {experience.order}</p>
                 </div>
-                <span className="rounded-full border border-gray-200 px-3 py-1 text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">Edit</span>
+                <div className="flex items-center gap-2">
+                  <span className={`rounded-full border px-3 py-1 text-xs ${experience.isEnabled ? "border-emerald-300/30 text-emerald-500 dark:text-emerald-300" : "border-amber-300/30 text-amber-500 dark:text-amber-300"}`}>
+                    {experience.isEnabled ? "Live" : "Hidden"}
+                  </span>
+                  <span className="rounded-full border border-gray-200 px-3 py-1 text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">Edit</span>
+                </div>
               </summary>
 
               <div className="mt-5 space-y-4 border-t border-gray-200 pt-5 dark:border-gray-800">
@@ -81,6 +90,10 @@ export default async function AdminExperiencePage() {
                     <input name="endDate" defaultValue={experience.endDate ?? ""} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
                   </div>
                   <textarea name="description" rows={6} defaultValue={formatList(experience.description)} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+                  <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-3 dark:border-gray-800">
+                    <input id={`experience-enabled-${experience.id}`} name="isEnabled" type="checkbox" defaultChecked={experience.isEnabled} className="h-4 w-4 rounded border-gray-300 text-indigo-600" />
+                    <label htmlFor={`experience-enabled-${experience.id}`} className="text-sm text-gray-700 dark:text-gray-300">Show this card on the website</label>
+                  </div>
                   <button type="submit" className="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700">Update Experience</button>
                 </form>
                 <form action={async () => {

@@ -79,6 +79,8 @@ function getYoutubeEmbedUrl(url?: string | null) {
 export default function ProjectSection({ projects }: { projects: Project[] }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
+  if (projects.length === 0) return null;
+
   const selectedProject = useMemo(
     () => projects.find((project) => project.id === selectedId) ?? null,
     [projects, selectedId],

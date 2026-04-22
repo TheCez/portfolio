@@ -30,6 +30,8 @@ function parseList(description: string) {
 }
 
 export default function ExperienceSection({ experiences }: { experiences: Experience[] }) {
+  if (experiences.length === 0) return null;
+
   return (
     <section id="experience" className="section-anchor">
       <div className="section-shell">

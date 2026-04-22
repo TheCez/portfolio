@@ -48,6 +48,7 @@ async function main() {
           "Implemented real-time Audio Processing pipelines using OpenAI Whisper and TTS models",
           "Applied advanced Prompt Engineering techniques to optimize LLM outputs",
         ]),
+        isEnabled: true,
         order: 1,
       },
       {
@@ -61,6 +62,7 @@ async function main() {
           "Implemented Infrastructure as Code (IaC) using Ansible to automate system setup",
           "Managed and maintained Linux-based infrastructure, ensuring high availability",
         ]),
+        isEnabled: true,
         order: 2,
       },
       {
@@ -74,6 +76,7 @@ async function main() {
           "Implemented real-time Computer Vision pipelines using YOLO to detect objects",
           "Programmed and optimized low-latency algorithms on Nvidia Jetson and Raspberry Pi",
         ]),
+        isEnabled: true,
         order: 3,
       },
     ],
@@ -92,6 +95,7 @@ async function main() {
           "Engineered multi-agent AI system to autonomously manage summarization workflows",
           "Won Best LLM Idea at Healthcare Hackathon 2024 (Berlin) and HealthHack 2024 Winner",
         ]),
+        isEnabled: true,
         order: 1,
       },
       {
@@ -105,6 +109,7 @@ async function main() {
           "Engineered Agentic AI workflow to autonomously interpret structural features",
           "Won 'Solves a BIG AEC Problem' at AEC Hackathon Munich 2024",
         ]),
+        isEnabled: true,
         order: 2,
       },
       {
@@ -118,6 +123,7 @@ async function main() {
           "Implemented real-time object detection using YOLO",
           "All India Rank 2 at SAUR URJA VEHICLE CHALLENGE 2022",
         ]),
+        isEnabled: true,
         order: 3,
       },
     ],
@@ -131,6 +137,7 @@ async function main() {
         dates: "10.2022 - 10.2025",
         results: "Final Grade: 1.9\nMaster Thesis: Computation and Validation of Occupancy Grids for Solving Traffic Conflicts in Multi-vehicle Trajectory Planning",
         imageUrl: null,
+        isEnabled: true,
         order: 1,
       },
       {
@@ -139,6 +146,7 @@ async function main() {
         dates: "05.2018 - 03.2022",
         results: "Final Grade: 1.6 (Excellent)",
         imageUrl: null,
+        isEnabled: true,
         order: 2,
       },
     ],
@@ -151,6 +159,7 @@ async function main() {
         event: "AEC Hackathon Munich 2024",
         icon: "competition",
         imageUrl: null,
+        isEnabled: true,
         order: 1,
       },
       {
@@ -158,6 +167,7 @@ async function main() {
         event: "Healthcare Hackathon 2024\nBerlin (UKSH)",
         icon: "competition",
         imageUrl: null,
+        isEnabled: true,
         order: 2,
       },
       {
@@ -165,6 +175,7 @@ async function main() {
         event: "HealthHack 2024\nBraunschweig",
         icon: "competition",
         imageUrl: null,
+        isEnabled: true,
         order: 3,
       },
       {
@@ -172,6 +183,7 @@ async function main() {
         event: "SAUR URJA VEHICLE CHALLENGE 2022\nIndia",
         icon: "competition",
         imageUrl: null,
+        isEnabled: true,
         order: 4,
       },
       {
@@ -179,6 +191,7 @@ async function main() {
         event: "Microsoft Azure Fundamentals\nMicrosoft Certification",
         icon: "certification",
         imageUrl: null,
+        isEnabled: true,
         order: 5,
       },
       {
@@ -186,6 +199,7 @@ async function main() {
         event: "ICOEI 2022\nFacial Recognition Security System",
         icon: "research",
         imageUrl: null,
+        isEnabled: true,
         order: 6,
       },
     ],
@@ -196,6 +210,7 @@ async function main() {
       category: skill.category,
       icon: skill.icon,
       tags: skill.tags.join(", "),
+      isEnabled: true,
       order: index,
     })),
   });
@@ -212,6 +227,7 @@ async function main() {
         source: null,
         sourceUrl: null,
         isFeatured: true,
+        isEnabled: true,
         order: 1,
       },
       {
@@ -224,6 +240,7 @@ async function main() {
         source: null,
         sourceUrl: null,
         isFeatured: false,
+        isEnabled: true,
         order: 2,
       },
     ],

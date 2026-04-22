@@ -43,8 +43,10 @@ services:
       - minio
     volumes:
       - ./runtime_debug:/app/runtime
+      - ./db_backups:/app/db_backups
     environment:
       DATABASE_URL: postgresql://portfolio_user:portfolio_password@db:5432/portfolio_db?schema=public
+      DB_BACKUP_DIR: /app/db_backups
       NEXTAUTH_SECRET: local_debug_secret_key_123
       AUTH_TRUST_HOST: "true"
       NEXTAUTH_URL: ${NEXTAUTH_URL_LOCAL:-http://localhost:3000}

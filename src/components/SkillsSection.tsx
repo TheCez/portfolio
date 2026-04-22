@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { BrainCircuit, Cloud, Code2, Lightbulb, Server, Users } from "lucide-react";
-import { defaultSkillGroups } from "@/lib/default-skills";
 
 type SkillRecord = {
   id: string;
@@ -20,13 +19,6 @@ const iconMap: Record<string, typeof BrainCircuit> = {
 };
 
 function normalizeSkills(skills: SkillRecord[]) {
-  if (skills.length === 0) {
-    return defaultSkillGroups.map((skill) => ({
-      category: skill.category,
-      tags: skill.tags,
-    }));
-  }
-
   return skills.map((skill) => ({
     category: skill.category,
     tags: skill.tags
@@ -38,6 +30,8 @@ function normalizeSkills(skills: SkillRecord[]) {
 
 export default function SkillsSection({ skills }: { skills: SkillRecord[] }) {
   const groups = normalizeSkills(skills);
+
+  if (groups.length === 0) return null;
 
   return (
     <section id="skills" className="section-anchor">

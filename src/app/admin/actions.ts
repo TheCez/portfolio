@@ -1,5 +1,9 @@
 "use server";
 
+import { execFile } from "node:child_process";
+import { mkdir } from "node:fs/promises";
+import { promisify } from "node:util";
+import path from "node:path";
 import { prisma } from "@/lib/prisma";
 import type { AdminActionState } from "./action-state";
 import { getSiteSettings } from "@/lib/site-settings";
@@ -7,12 +11,18 @@ import { isStorageConfigured, uploadFileToStorage } from "@/lib/storage";
 import { defaultSkillGroups } from "@/lib/default-skills";
 import { revalidatePath } from "next/cache";
 
+const execFileAsync = promisify(execFile);
+
 function normalizeText(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
 }
 
 function normalizeOptionalUrl(value: string) {
   return value.length > 0 ? value : null;
+}
+
+function normalizeCheckbox(value: FormDataEntryValue | null) {
+  return value === "on";
 }
 
 function normalizeCsv(value: string) {
@@ -62,6 +72,15 @@ function normalizeReferenceSource(value: string) {
   }
 
   return null;
+}
+
+function getDatabaseBackupDir() {
+  return process.env.DB_BACKUP_DIR || path.join(process.cwd(), "db_backups");
+}
+
+function createBackupFileName() {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  return `portfolio_db_manual_${timestamp}.sql`;
 }
 
 async function reorderEntities(
@@ -124,6 +143,7 @@ export async function addProject(_previousState: AdminActionState, formData: For
         imageUrl,
         videoUrl,
         highlights,
+        isEnabled: normalizeCheckbox(formData.get("isEnabled")),
         order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
       },
     });
@@ -169,6 +189,7 @@ export async function updateProject(id: string, _previousState: AdminActionState
         imageUrl,
         videoUrl,
         highlights: normalizeList(normalizeText(formData.get("highlights"))),
+        isEnabled: normalizeCheckbox(formData.get("isEnabled")),
         order: Number.isFinite(orderValue) ? orderValue : existing.order,
       },
     });
@@ -275,6 +296,7 @@ export async function addExperience(formData: FormData) {
       startDate: normalizeText(formData.get("startDate")),
       endDate: normalizeOptionalUrl(normalizeText(formData.get("endDate"))),
       description: normalizeList(normalizeText(formData.get("description"))),
+      isEnabled: normalizeCheckbox(formData.get("isEnabled")),
       order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
     },
   });
@@ -299,6 +321,7 @@ export async function updateExperience(id: string, formData: FormData) {
       startDate: normalizeText(formData.get("startDate")),
       endDate: normalizeOptionalUrl(normalizeText(formData.get("endDate"))),
       description: normalizeList(normalizeText(formData.get("description"))),
+      isEnabled: normalizeCheckbox(formData.get("isEnabled")),
       order: Number.isFinite(orderValue) ? orderValue : existing.order,
     },
   });
@@ -335,6 +358,7 @@ export async function addEducation(_previousState: AdminActionState, formData: F
         dates: normalizeText(formData.get("dates")),
         results: normalizeText(formData.get("results")),
         imageUrl,
+        isEnabled: normalizeCheckbox(formData.get("isEnabled")),
         order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
       },
     });
@@ -381,6 +405,7 @@ export async function updateEducation(id: string, _previousState: AdminActionSta
         dates: normalizeText(formData.get("dates")),
         results: normalizeText(formData.get("results")),
         imageUrl,
+        isEnabled: normalizeCheckbox(formData.get("isEnabled")),
         order: Number.isFinite(orderValue) ? orderValue : existing.order,
       },
     });
@@ -430,6 +455,7 @@ export async function addAchievement(_previousState: AdminActionState, formData:
         event: normalizeText(formData.get("event")),
         icon: normalizeAchievementType(normalizeText(formData.get("icon"))),
         imageUrl,
+        isEnabled: normalizeCheckbox(formData.get("isEnabled")),
         order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
       },
     });
@@ -475,6 +501,7 @@ export async function updateAchievement(id: string, _previousState: AdminActionS
         event: normalizeText(formData.get("event")),
         icon: normalizeAchievementType(normalizeText(formData.get("icon")) || existing.icon),
         imageUrl,
+        isEnabled: normalizeCheckbox(formData.get("isEnabled")),
         order: Number.isFinite(orderValue) ? orderValue : existing.order,
       },
     });
@@ -529,6 +556,7 @@ export async function addReference(_previousState: AdminActionState, formData: F
         source: normalizeReferenceSource(normalizeText(formData.get("source"))),
         sourceUrl: normalizeOptionalUrl(normalizeText(formData.get("sourceUrl"))),
         isFeatured: normalizeText(formData.get("isFeatured")) === "on",
+        isEnabled: normalizeCheckbox(formData.get("isEnabled")),
         order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
       },
     });
@@ -566,6 +594,7 @@ export async function updateReference(id: string, _previousState: AdminActionSta
       "photoUrl",
       "references/photos",
     );
+    const source = normalizeReferenceSource(normalizeText(formData.get("source"))) ?? existing.source ?? null;
 
     await prisma.reference.update({
       where: { id },
@@ -576,9 +605,10 @@ export async function updateReference(id: string, _previousState: AdminActionSta
         company: normalizeOptionalUrl(normalizeText(formData.get("company"))),
         dateLabel: normalizeOptionalUrl(normalizeText(formData.get("dateLabel"))),
         photoUrl,
-        source: normalizeReferenceSource(normalizeText(formData.get("source"))),
+        source,
         sourceUrl: normalizeOptionalUrl(normalizeText(formData.get("sourceUrl"))),
         isFeatured: normalizeText(formData.get("isFeatured")) === "on",
+        isEnabled: normalizeCheckbox(formData.get("isEnabled")),
         order: Number.isFinite(orderValue) ? orderValue : existing.order,
       },
     });
@@ -625,6 +655,7 @@ export async function addSkill(formData: FormData) {
       category: normalizeText(formData.get("category")),
       icon: normalizeText(formData.get("icon")) || "sparkles",
       tags: normalizeCsv(normalizeText(formData.get("tags"))),
+      isEnabled: normalizeCheckbox(formData.get("isEnabled")),
       order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
     },
   });
@@ -646,6 +677,7 @@ export async function updateSkill(id: string, formData: FormData) {
       category: normalizeText(formData.get("category")),
       icon: normalizeText(formData.get("icon")) || existing.icon,
       tags: normalizeCsv(normalizeText(formData.get("tags"))),
+      isEnabled: normalizeCheckbox(formData.get("isEnabled")),
       order: Number.isFinite(orderValue) ? orderValue : existing.order,
     },
   });
@@ -680,6 +712,7 @@ export async function importDefaultSkills() {
       category: skill.category,
       icon: skill.icon,
       tags: skill.tags.join(", "),
+      isEnabled: true,
       order: index,
     })),
   });
@@ -687,4 +720,56 @@ export async function importDefaultSkills() {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/skills");
+}
+
+export async function createDatabaseBackup(_previousState: AdminActionState, _formData: FormData): Promise<AdminActionState> {
+  try {
+    const databaseUrl = process.env.DATABASE_URL;
+
+    if (!databaseUrl) {
+      return { ok: false, message: "DATABASE_URL is not configured, so the backup could not start." };
+    }
+
+    const parsedUrl = new URL(databaseUrl);
+    const outputDir = getDatabaseBackupDir();
+    const outputFile = path.join(outputDir, createBackupFileName());
+
+    await mkdir(outputDir, { recursive: true });
+
+    const args = [
+      "--clean",
+      "--if-exists",
+      "--no-owner",
+      "--no-privileges",
+      "-h",
+      parsedUrl.hostname,
+      "-p",
+      parsedUrl.port || "5432",
+      "-U",
+      decodeURIComponent(parsedUrl.username),
+      "-d",
+      parsedUrl.pathname.replace(/^\//, ""),
+      "-f",
+      outputFile,
+    ];
+
+    await execFileAsync("pg_dump", args, {
+      env: {
+        ...process.env,
+        PGPASSWORD: decodeURIComponent(parsedUrl.password),
+      },
+    });
+
+    revalidatePath("/admin");
+
+    return {
+      ok: true,
+      message: `Database backup created: ${path.basename(outputFile)}`,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Failed to create database backup.",
+    };
+  }
 }

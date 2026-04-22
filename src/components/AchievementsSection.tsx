@@ -43,8 +43,8 @@ export default function AchievementsSection({ achievements }: { achievements: Ac
 
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {achievements.map((achievement, idx) => {
-            const hasImage = Boolean(achievement.imageUrl);
-            const Wrapper = hasImage ? motion.button : motion.article;
+            const hasAttachment = Boolean(achievement.imageUrl);
+            const Wrapper = hasAttachment ? motion.button : motion.article;
             const { Icon, accent } = getAchievementVisual(achievement.icon);
 
             return (
@@ -54,14 +54,14 @@ export default function AchievementsSection({ achievements }: { achievements: Ac
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ delay: idx * 0.04 }}
-                {...(hasImage
+                {...(hasAttachment
                   ? {
                       type: "button" as const,
                       onClick: () => setSelectedAchievement(achievement),
                     }
                   : {})}
                 className={`surface-outline glass-panel rounded-[1.6rem] p-5 text-left transition sm:p-6 ${
-                  hasImage
+                  hasAttachment
                     ? "cursor-pointer hover:-translate-y-1.5 hover:[box-shadow:0_28px_90px_rgba(3,8,20,0.55),0_0_40px_rgba(124,140,255,0.18)]"
                     : ""
                 }`}
@@ -70,16 +70,16 @@ export default function AchievementsSection({ achievements }: { achievements: Ac
                   <div className={`flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] shadow-[0_12px_24px_rgba(0,0,0,0.16)] ${accent}`}>
                     <Icon size={24} />
                   </div>
-                  {hasImage ? (
+                  {hasAttachment ? (
                     <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/8 px-3 py-1.5 text-xs font-medium text-cyan-100/90">
                       <ImageIcon size={14} className="text-cyan-300" />
-                      Certificate attached
+                      Attachment available
                     </div>
                   ) : null}
                 </div>
                 <h3 className="mb-2 text-lg font-semibold text-white sm:text-xl">{achievement.title}</h3>
                 <p className="whitespace-pre-line text-sm leading-7 text-slate-400">{achievement.event}</p>
-                {hasImage ? (
+                {hasAttachment ? (
                   <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-cyan-200">
                     Open attachment
                     <Expand size={15} />
@@ -93,7 +93,7 @@ export default function AchievementsSection({ achievements }: { achievements: Ac
 
       {selectedAchievement?.imageUrl ? (
         <ImageLightbox
-          imageUrl={selectedAchievement.imageUrl}
+          mediaUrl={selectedAchievement.imageUrl}
           title={selectedAchievement.title}
           onClose={() => setSelectedAchievement(null)}
         />

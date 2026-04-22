@@ -31,7 +31,7 @@ export default async function AdminEducationPage() {
         }`}
       >
         {storageReady
-          ? "Storage is configured. You can upload certificate images here or paste a direct image URL. Uploads replace the saved URL, and leaving the URL blank with no upload clears it."
+          ? "Storage is configured. You can upload certificate images or PDFs here, or paste a direct attachment URL. Uploads replace the saved URL, and leaving the URL blank with no upload clears it."
           : "Storage is not configured. URL fields still work, but uploads need the MinIO/S3 env vars enabled."}
       </div>
 
@@ -92,10 +92,14 @@ export default async function AdminEducationPage() {
             <div className="grid gap-4 md:grid-cols-2">
               <input
                 name="imageUrl"
-                placeholder="Certificate image URL (optional)"
+                placeholder="Certificate image or PDF URL (optional)"
                 className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white"
               />
-              <AdminFileDropInput name="imageFile" accept="image/*" label="Upload Certificate" helperText="Drop a certificate image here or click to browse." />
+              <AdminFileDropInput name="imageFile" accept="image/*,.pdf,application/pdf" label="Upload Certificate" helperText="Drop a certificate image or PDF here or click to browse." />
+            </div>
+            <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-3 dark:border-gray-800">
+              <input id="education-enabled" name="isEnabled" type="checkbox" defaultChecked className="h-4 w-4 rounded border-gray-300 text-indigo-600" />
+              <label htmlFor="education-enabled" className="text-sm text-gray-700 dark:text-gray-300">Show this card on the website</label>
             </div>
             <AdminSubmitButton
               idleLabel="Save Education"
@@ -116,9 +120,14 @@ export default async function AdminEducationPage() {
                     {entry.university} · Order {entry.order}
                   </p>
                 </div>
-                <span className="rounded-full border border-gray-200 px-3 py-1 text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
-                  Edit
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className={`rounded-full border px-3 py-1 text-xs ${entry.isEnabled ? "border-emerald-300/30 text-emerald-500 dark:text-emerald-300" : "border-amber-300/30 text-amber-500 dark:text-amber-300"}`}>
+                    {entry.isEnabled ? "Live" : "Hidden"}
+                  </span>
+                  <span className="rounded-full border border-gray-200 px-3 py-1 text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                    Edit
+                  </span>
+                </div>
               </summary>
 
               <div className="mt-5 space-y-4 border-t border-gray-200 pt-5 dark:border-gray-800">
@@ -161,10 +170,14 @@ export default async function AdminEducationPage() {
                     <input
                       name="imageUrl"
                       defaultValue={entry.imageUrl ?? ""}
-                      placeholder="Certificate image URL (optional)"
+                      placeholder="Certificate image or PDF URL (optional)"
                       className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white"
                     />
-                    <AdminFileDropInput name="imageFile" accept="image/*" label="Upload New Certificate" helperText="Drop a replacement certificate here or click to browse." />
+                    <AdminFileDropInput name="imageFile" accept="image/*,.pdf,application/pdf" label="Upload New Certificate" helperText="Drop a replacement certificate image or PDF here or click to browse." />
+                  </div>
+                  <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-3 dark:border-gray-800">
+                    <input id={`education-enabled-${entry.id}`} name="isEnabled" type="checkbox" defaultChecked={entry.isEnabled} className="h-4 w-4 rounded border-gray-300 text-indigo-600" />
+                    <label htmlFor={`education-enabled-${entry.id}`} className="text-sm text-gray-700 dark:text-gray-300">Show this card on the website</label>
                   </div>
                   <AdminSubmitButton
                     idleLabel="Update Education"
