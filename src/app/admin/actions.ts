@@ -5,6 +5,7 @@ import { getSiteSettings } from "@/lib/site-settings";
 import { isStorageConfigured, uploadFileToStorage } from "@/lib/storage";
 import { defaultSkillGroups } from "@/lib/default-skills";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 function normalizeText(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
@@ -107,6 +108,7 @@ export async function addProject(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/projects");
+  redirect("/admin/projects");
 }
 
 export async function updateProject(id: string, formData: FormData) {
@@ -136,6 +138,7 @@ export async function updateProject(id: string, formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/projects");
+  redirect("/admin/projects");
 }
 
 export async function deleteProject(id: string) {
@@ -145,6 +148,7 @@ export async function deleteProject(id: string) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/projects");
+  redirect("/admin/projects");
 }
 
 export async function reorderProjects(ids: string[]) {
@@ -191,6 +195,7 @@ export async function updateSiteSettings(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/settings");
+  redirect("/admin/settings");
 }
 
 export async function addExperience(formData: FormData) {
@@ -212,6 +217,7 @@ export async function addExperience(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/experience");
+  redirect("/admin/experience");
 }
 
 export async function updateExperience(id: string, formData: FormData) {
@@ -236,6 +242,7 @@ export async function updateExperience(id: string, formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/experience");
+  redirect("/admin/experience");
 }
 
 export async function deleteExperience(id: string) {
@@ -243,6 +250,7 @@ export async function deleteExperience(id: string) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/experience");
+  redirect("/admin/experience");
 }
 
 export async function reorderExperiences(ids: string[]) {
@@ -271,6 +279,7 @@ export async function addEducation(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/education");
+  redirect("/admin/education");
 }
 
 export async function updateEducation(id: string, formData: FormData) {
@@ -300,6 +309,7 @@ export async function updateEducation(id: string, formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/education");
+  redirect("/admin/education");
 }
 
 export async function deleteEducation(id: string) {
@@ -307,6 +317,7 @@ export async function deleteEducation(id: string) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/education");
+  redirect("/admin/education");
 }
 
 export async function reorderEducation(ids: string[]) {
@@ -334,6 +345,7 @@ export async function addAchievement(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/achievements");
+  redirect("/admin/achievements");
 }
 
 export async function updateAchievement(id: string, formData: FormData) {
@@ -362,6 +374,7 @@ export async function updateAchievement(id: string, formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/achievements");
+  redirect("/admin/achievements");
 }
 
 export async function deleteAchievement(id: string) {
@@ -369,6 +382,7 @@ export async function deleteAchievement(id: string) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/achievements");
+  redirect("/admin/achievements");
 }
 
 export async function reorderAchievements(ids: string[]) {
@@ -401,6 +415,7 @@ export async function addReference(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/references");
+  redirect("/admin/references");
 }
 
 export async function updateReference(id: string, formData: FormData) {
@@ -434,6 +449,7 @@ export async function updateReference(id: string, formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/references");
+  redirect("/admin/references");
 }
 
 export async function deleteReference(id: string) {
@@ -441,6 +457,7 @@ export async function deleteReference(id: string) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/references");
+  redirect("/admin/references");
 }
 
 export async function reorderReferences(ids: string[]) {
@@ -466,6 +483,7 @@ export async function addSkill(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/skills");
+  redirect("/admin/skills");
 }
 
 export async function updateSkill(id: string, formData: FormData) {
@@ -487,6 +505,7 @@ export async function updateSkill(id: string, formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/skills");
+  redirect("/admin/skills");
 }
 
 export async function deleteSkill(id: string) {
@@ -494,6 +513,7 @@ export async function deleteSkill(id: string) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/skills");
+  redirect("/admin/skills");
 }
 
 export async function reorderSkills(ids: string[]) {
