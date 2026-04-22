@@ -85,7 +85,7 @@ export default function ReferencesSection({ references }: { references: Referenc
                   </div>
                   <div className="min-w-0 flex-1">
                     <h3 className="text-base font-semibold text-white">{reference.name}</h3>
-                    <p className="truncate text-sm text-slate-400">{subtitle}</p>
+                    <p className="text-sm leading-6 text-slate-400 break-words">{subtitle}</p>
                     {reference.dateLabel ? (
                       <p className="mt-1 text-xs uppercase tracking-[0.12em] text-slate-500">{reference.dateLabel}</p>
                     ) : null}
