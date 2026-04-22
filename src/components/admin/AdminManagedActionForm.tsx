@@ -1,10 +1,12 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import type { AdminActionState } from "@/app/admin/action-state";
 import { initialAdminActionState } from "@/app/admin/action-state";
+
+const MAX_SERVER_ACTION_UPLOAD_BYTES = 256 * 1024 * 1024;
 
 type AdminManagedActionFormProps = {
   action: (state: AdminActionState, formData: FormData) => Promise<AdminActionState>;
@@ -25,10 +27,13 @@ export default function AdminManagedActionForm({
 }: AdminManagedActionFormProps) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
+  const [clientError, setClientError] = useState("");
   const [state, formAction] = useActionState(action, initialAdminActionState);
 
   useEffect(() => {
     if (!state.ok || !formRef.current) return;
+
+    setClientError("");
 
     if (state.media) {
       for (const fieldName of mediaFieldNames) {
@@ -50,8 +55,28 @@ export default function AdminManagedActionForm({
   }, [mediaFieldNames, refreshOnSuccess, resetOnSuccess, router, state]);
 
   return (
-    <form ref={formRef} action={formAction} className={className}>
+    <form
+      ref={formRef}
+      action={formAction}
+      className={className}
+      onSubmit={(event) => {
+        const form = formRef.current;
+        if (!form) return;
+
+        const fileInputs = Array.from(form.querySelectorAll('input[type="file"]'));
+        const totalBytes = fileInputs.reduce((sum, input) => sum + (input.files?.[0]?.size ?? 0), 0);
+
+        if (totalBytes > MAX_SERVER_ACTION_UPLOAD_BYTES) {
+          event.preventDefault();
+          setClientError("Selected upload is too large for the current form limit. Please use a smaller file or switch to an external link for very large media.");
+          return;
+        }
+
+        setClientError("");
+      }}
+    >
       {children}
+      {clientError ? <p className="text-sm text-rose-400">{clientError}</p> : null}
       {state.message ? (
         <p className={`text-sm ${state.ok ? "text-emerald-400" : "text-rose-400"}`}>{state.message}</p>
       ) : null}
