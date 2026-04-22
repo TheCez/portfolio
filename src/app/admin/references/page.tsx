@@ -8,6 +8,17 @@ import { addReference, deleteReference, reorderReferences, updateReference } fro
 
 export const dynamic = "force-dynamic";
 
+function normalizeSourceValue(value?: string | null) {
+  const normalized = value?.trim().toLowerCase() ?? "";
+
+  if (!normalized) return "";
+  if (normalized.includes("linkedin")) return "linkedin";
+  if (normalized.includes("email") || normalized.includes("message")) return "email";
+  if (normalized.includes("manual")) return "manual";
+
+  return "";
+}
+
 export default async function AdminReferencesPage() {
   const [references, storageReady] = await Promise.all([
     prisma.reference.findMany({ orderBy: { order: "asc" } }),
@@ -190,7 +201,7 @@ export default async function AdminReferencesPage() {
                     />
                   </div>
                   <div className="grid gap-4 md:grid-cols-2">
-                    <select name="source" defaultValue={entry.source ?? ""} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white">
+                    <select name="source" defaultValue={normalizeSourceValue(entry.source)} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white">
                       <option value="" className="text-black">No source badge</option>
                       <option value="linkedin" className="text-black">LinkedIn recommendation</option>
                       <option value="manual" className="text-black">Manual reference</option>

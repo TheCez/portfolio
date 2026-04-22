@@ -42,6 +42,28 @@ function normalizeAchievementType(value: string) {
   return "competition";
 }
 
+function normalizeReferenceSource(value: string) {
+  const normalized = value.trim().toLowerCase();
+
+  if (normalized.length === 0) {
+    return null;
+  }
+
+  if (normalized.includes("linkedin")) {
+    return "linkedin";
+  }
+
+  if (normalized.includes("email") || normalized.includes("message")) {
+    return "email";
+  }
+
+  if (normalized.includes("manual")) {
+    return "manual";
+  }
+
+  return null;
+}
+
 async function reorderEntities(
   model: "project" | "experience" | "education" | "achievement" | "reference" | "skill",
   ids: string[],
@@ -504,7 +526,7 @@ export async function addReference(_previousState: AdminActionState, formData: F
         company: normalizeOptionalUrl(normalizeText(formData.get("company"))),
         dateLabel: normalizeOptionalUrl(normalizeText(formData.get("dateLabel"))),
         photoUrl,
-        source: normalizeOptionalUrl(normalizeText(formData.get("source"))),
+        source: normalizeReferenceSource(normalizeText(formData.get("source"))),
         sourceUrl: normalizeOptionalUrl(normalizeText(formData.get("sourceUrl"))),
         isFeatured: normalizeText(formData.get("isFeatured")) === "on",
         order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
@@ -554,7 +576,7 @@ export async function updateReference(id: string, _previousState: AdminActionSta
         company: normalizeOptionalUrl(normalizeText(formData.get("company"))),
         dateLabel: normalizeOptionalUrl(normalizeText(formData.get("dateLabel"))),
         photoUrl,
-        source: normalizeOptionalUrl(normalizeText(formData.get("source"))),
+        source: normalizeReferenceSource(normalizeText(formData.get("source"))),
         sourceUrl: normalizeOptionalUrl(normalizeText(formData.get("sourceUrl"))),
         isFeatured: normalizeText(formData.get("isFeatured")) === "on",
         order: Number.isFinite(orderValue) ? orderValue : existing.order,
