@@ -1,3 +1,5 @@
+import AdminManagedActionForm from "@/components/admin/AdminManagedActionForm";
+import AdminSubmitButton from "@/components/admin/AdminSubmitButton";
 import { updateSiteSettings } from "../actions";
 import AdminFileDropInput from "@/components/admin/AdminFileDropInput";
 import { getDefaultSiteSettings, getSiteSettings, parseParagraphs } from "@/lib/site-settings";
@@ -32,7 +34,11 @@ export default async function AdminSettingsPage() {
           : "Storage is not configured yet. URL fields will work, but file uploads will be disabled until the storage env vars are present."}
       </div>
 
-      <form action={updateSiteSettings} className="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
+      <AdminManagedActionForm
+        action={updateSiteSettings}
+        className="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]"
+        mediaFieldNames={["profileImageUrl"]}
+      >
         <div className="space-y-8">
           <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
             <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Hero</h2>
@@ -132,14 +138,13 @@ export default async function AdminSettingsPage() {
             </div>
           </section>
 
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700"
-          >
-            Save Site Settings
-          </button>
+          <AdminSubmitButton
+            idleLabel="Save Site Settings"
+            pendingLabel="Uploading image..."
+            className="w-full rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
+          />
         </div>
-      </form>
+      </AdminManagedActionForm>
     </div>
   );
 }

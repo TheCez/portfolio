@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import AdminFileDropInput from "@/components/admin/AdminFileDropInput";
 import AdminSortableList from "@/components/admin/AdminSortableList";
+import AdminManagedActionForm from "@/components/admin/AdminManagedActionForm";
+import AdminSubmitButton from "@/components/admin/AdminSubmitButton";
 import { isStorageConfigured } from "@/lib/storage";
 import { addEducation, deleteEducation, reorderEducation, updateEducation } from "../actions";
 
@@ -46,7 +48,13 @@ export default async function AdminEducationPage() {
       <div className="grid gap-8 xl:grid-cols-[0.95fr_1.25fr]">
         <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
           <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Add Education</h2>
-          <form action={addEducation} className="space-y-4">
+          <AdminManagedActionForm
+            action={addEducation}
+            className="space-y-4"
+            mediaFieldNames={["imageUrl"]}
+            refreshOnSuccess
+            resetOnSuccess
+          >
             <input
               name="degree"
               required
@@ -89,10 +97,12 @@ export default async function AdminEducationPage() {
               />
               <AdminFileDropInput name="imageFile" accept="image/*" label="Upload Certificate" helperText="Drop a certificate image here or click to browse." />
             </div>
-            <button type="submit" className="w-full rounded-md bg-indigo-600 py-2 font-medium text-white hover:bg-indigo-700">
-              Save Education
-            </button>
-          </form>
+            <AdminSubmitButton
+              idleLabel="Save Education"
+              pendingLabel="Uploading certificate..."
+              className="w-full rounded-md bg-indigo-600 py-2 font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
+            />
+          </AdminManagedActionForm>
         </section>
 
         <section className="space-y-4">
@@ -112,12 +122,10 @@ export default async function AdminEducationPage() {
               </summary>
 
               <div className="mt-5 space-y-4 border-t border-gray-200 pt-5 dark:border-gray-800">
-                <form
-                  action={async (formData) => {
-                    "use server";
-                    await updateEducation(entry.id, formData);
-                  }}
+                <AdminManagedActionForm
+                  action={updateEducation.bind(null, entry.id)}
                   className="space-y-4"
+                  mediaFieldNames={["imageUrl"]}
                 >
                   <input
                     name="degree"
@@ -158,10 +166,12 @@ export default async function AdminEducationPage() {
                     />
                     <AdminFileDropInput name="imageFile" accept="image/*" label="Upload New Certificate" helperText="Drop a replacement certificate here or click to browse." />
                   </div>
-                  <button type="submit" className="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700">
-                    Update Education
-                  </button>
-                </form>
+                  <AdminSubmitButton
+                    idleLabel="Update Education"
+                    pendingLabel="Uploading certificate..."
+                    className="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
+                  />
+                </AdminManagedActionForm>
                 <form
                   action={async () => {
                     "use server";

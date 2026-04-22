@@ -1,7 +1,7 @@
 "use client";
 
 import { FileImage, FileVideo, UploadCloud } from "lucide-react";
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 type AdminFileDropInputProps = {
   name: string;
@@ -16,6 +16,23 @@ export default function AdminFileDropInput({ name, accept, label, helperText }: 
   const [dragging, setDragging] = useState(false);
   const [fileName, setFileName] = useState("");
   const isVideo = accept.includes("video");
+
+  useEffect(() => {
+    const input = inputRef.current;
+    const form = input?.form;
+
+    if (!form) return;
+
+    const handleReset = () => {
+      setFileName("");
+      if (input) {
+        input.value = "";
+      }
+    };
+
+    form.addEventListener("reset", handleReset);
+    return () => form.removeEventListener("reset", handleReset);
+  }, []);
 
   return (
     <div className="space-y-2">

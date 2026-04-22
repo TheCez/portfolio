@@ -1,11 +1,11 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import type { AdminActionState } from "./action-state";
 import { getSiteSettings } from "@/lib/site-settings";
 import { isStorageConfigured, uploadFileToStorage } from "@/lib/storage";
 import { defaultSkillGroups } from "@/lib/default-skills";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 function normalizeText(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
@@ -79,66 +79,96 @@ async function resolveMediaField(
   return null;
 }
 
-export async function addProject(formData: FormData) {
-  const title = normalizeText(formData.get("title"));
-  const description = normalizeText(formData.get("description"));
-  const techTags = normalizeCsv(normalizeText(formData.get("techTags")));
-  const repoUrl = normalizeOptionalUrl(normalizeText(formData.get("repoUrl")));
-  const highlights = normalizeList(normalizeText(formData.get("highlights")));
-  const orderValue = Number(normalizeText(formData.get("order")));
+export async function addProject(_previousState: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  try {
+    const title = normalizeText(formData.get("title"));
+    const description = normalizeText(formData.get("description"));
+    const techTags = normalizeCsv(normalizeText(formData.get("techTags")));
+    const repoUrl = normalizeOptionalUrl(normalizeText(formData.get("repoUrl")));
+    const highlights = normalizeList(normalizeText(formData.get("highlights")));
+    const orderValue = Number(normalizeText(formData.get("order")));
 
-  const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "projects/images");
-  const videoUrl = await resolveMediaField(formData, "videoFile", "videoUrl", "projects/videos");
+    const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "projects/images");
+    const videoUrl = await resolveMediaField(formData, "videoFile", "videoUrl", "projects/videos");
 
-  const maxOrder = await prisma.project.aggregate({ _max: { order: true } });
+    const maxOrder = await prisma.project.aggregate({ _max: { order: true } });
 
-  await prisma.project.create({
-    data: {
-      title,
-      description,
-      techTags,
-      repoUrl,
-      imageUrl,
-      videoUrl,
-      highlights,
-      order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
-    },
-  });
+    await prisma.project.create({
+      data: {
+        title,
+        description,
+        techTags,
+        repoUrl,
+        imageUrl,
+        videoUrl,
+        highlights,
+        order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
+      },
+    });
 
-  revalidatePath("/");
-  revalidatePath("/admin");
-  revalidatePath("/admin/projects");
-  redirect("/admin/projects");
+    revalidatePath("/");
+    revalidatePath("/admin");
+    revalidatePath("/admin/projects");
+
+    return {
+      ok: true,
+      message: "Project saved.",
+      media: {
+        imageUrl: imageUrl ?? "",
+        videoUrl: videoUrl ?? "",
+      },
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Failed to save project.",
+    };
+  }
 }
 
-export async function updateProject(id: string, formData: FormData) {
-  const existing = await prisma.project.findUnique({ where: { id } });
-  if (!existing) {
-    throw new Error("Project not found.");
+export async function updateProject(id: string, _previousState: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  try {
+    const existing = await prisma.project.findUnique({ where: { id } });
+    if (!existing) {
+      return { ok: false, message: "Project not found." };
+    }
+
+    const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "projects/images");
+    const videoUrl = await resolveMediaField(formData, "videoFile", "videoUrl", "projects/videos");
+    const orderValue = Number(normalizeText(formData.get("order")));
+
+    await prisma.project.update({
+      where: { id },
+      data: {
+        title: normalizeText(formData.get("title")),
+        description: normalizeText(formData.get("description")),
+        techTags: normalizeCsv(normalizeText(formData.get("techTags"))),
+        repoUrl: normalizeOptionalUrl(normalizeText(formData.get("repoUrl"))),
+        imageUrl,
+        videoUrl,
+        highlights: normalizeList(normalizeText(formData.get("highlights"))),
+        order: Number.isFinite(orderValue) ? orderValue : existing.order,
+      },
+    });
+
+    revalidatePath("/");
+    revalidatePath("/admin");
+    revalidatePath("/admin/projects");
+
+    return {
+      ok: true,
+      message: "Project updated.",
+      media: {
+        imageUrl: imageUrl ?? "",
+        videoUrl: videoUrl ?? "",
+      },
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Failed to update project.",
+    };
   }
-
-  const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "projects/images");
-  const videoUrl = await resolveMediaField(formData, "videoFile", "videoUrl", "projects/videos");
-  const orderValue = Number(normalizeText(formData.get("order")));
-
-  await prisma.project.update({
-    where: { id },
-    data: {
-      title: normalizeText(formData.get("title")),
-      description: normalizeText(formData.get("description")),
-      techTags: normalizeCsv(normalizeText(formData.get("techTags"))),
-      repoUrl: normalizeOptionalUrl(normalizeText(formData.get("repoUrl"))),
-      imageUrl,
-      videoUrl,
-      highlights: normalizeList(normalizeText(formData.get("highlights"))),
-      order: Number.isFinite(orderValue) ? orderValue : existing.order,
-    },
-  });
-
-  revalidatePath("/");
-  revalidatePath("/admin");
-  revalidatePath("/admin/projects");
-  redirect("/admin/projects");
 }
 
 export async function deleteProject(id: string) {
@@ -148,7 +178,6 @@ export async function deleteProject(id: string) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/projects");
-  redirect("/admin/projects");
 }
 
 export async function reorderProjects(ids: string[]) {
@@ -158,44 +187,58 @@ export async function reorderProjects(ids: string[]) {
   revalidatePath("/admin/projects");
 }
 
-export async function updateSiteSettings(formData: FormData) {
-  const settings = await getSiteSettings();
+export async function updateSiteSettings(_previousState: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  try {
+    const settings = await getSiteSettings();
 
-  const profileImageUrl = await resolveMediaField(
-    formData,
-    "profileImageFile",
-    "profileImageUrl",
-    "site/profile",
-  );
+    const profileImageUrl = await resolveMediaField(
+      formData,
+      "profileImageFile",
+      "profileImageUrl",
+      "site/profile",
+    );
 
-  const paragraphs = normalizeText(formData.get("aboutParagraphs"));
+    const paragraphs = normalizeText(formData.get("aboutParagraphs"));
 
-  await prisma.settings.update({
-    where: { id: settings.id },
-    data: {
-      heroTitle: normalizeText(formData.get("heroTitle")),
-      heroRole: normalizeText(formData.get("heroRole")),
-      heroSpecialties: normalizeText(formData.get("heroSpecialties")),
-      aboutTitle: normalizeText(formData.get("aboutTitle")),
-      aboutParagraphs: JSON.stringify(
-        paragraphs
-          .split("\n")
-          .map((line) => line.trim())
-          .filter(Boolean),
-      ),
-      profileImageUrl,
-      contactEmail: normalizeText(formData.get("contactEmail")),
-      contactPhone: normalizeText(formData.get("contactPhone")),
-      contactLocation: normalizeText(formData.get("contactLocation")),
-      linkedinUrl: normalizeText(formData.get("linkedinUrl")),
-      githubUrl: normalizeText(formData.get("githubUrl")),
-    },
-  });
+    await prisma.settings.update({
+      where: { id: settings.id },
+      data: {
+        heroTitle: normalizeText(formData.get("heroTitle")),
+        heroRole: normalizeText(formData.get("heroRole")),
+        heroSpecialties: normalizeText(formData.get("heroSpecialties")),
+        aboutTitle: normalizeText(formData.get("aboutTitle")),
+        aboutParagraphs: JSON.stringify(
+          paragraphs
+            .split("\n")
+            .map((line) => line.trim())
+            .filter(Boolean),
+        ),
+        profileImageUrl,
+        contactEmail: normalizeText(formData.get("contactEmail")),
+        contactPhone: normalizeText(formData.get("contactPhone")),
+        contactLocation: normalizeText(formData.get("contactLocation")),
+        linkedinUrl: normalizeText(formData.get("linkedinUrl")),
+        githubUrl: normalizeText(formData.get("githubUrl")),
+      },
+    });
 
-  revalidatePath("/");
-  revalidatePath("/admin");
-  revalidatePath("/admin/settings");
-  redirect("/admin/settings");
+    revalidatePath("/");
+    revalidatePath("/admin");
+    revalidatePath("/admin/settings");
+
+    return {
+      ok: true,
+      message: "Settings updated.",
+      media: {
+        profileImageUrl: profileImageUrl ?? "",
+      },
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Failed to update settings.",
+    };
+  }
 }
 
 export async function addExperience(formData: FormData) {
@@ -217,7 +260,6 @@ export async function addExperience(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/experience");
-  redirect("/admin/experience");
 }
 
 export async function updateExperience(id: string, formData: FormData) {
@@ -242,7 +284,6 @@ export async function updateExperience(id: string, formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/experience");
-  redirect("/admin/experience");
 }
 
 export async function deleteExperience(id: string) {
@@ -250,7 +291,6 @@ export async function deleteExperience(id: string) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/experience");
-  redirect("/admin/experience");
 }
 
 export async function reorderExperiences(ids: string[]) {
@@ -260,56 +300,86 @@ export async function reorderExperiences(ids: string[]) {
   revalidatePath("/admin/experience");
 }
 
-export async function addEducation(formData: FormData) {
-  const maxOrder = await prisma.education.aggregate({ _max: { order: true } });
-  const orderValue = Number(normalizeText(formData.get("order")));
-  const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "education/certificates");
+export async function addEducation(_previousState: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  try {
+    const maxOrder = await prisma.education.aggregate({ _max: { order: true } });
+    const orderValue = Number(normalizeText(formData.get("order")));
+    const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "education/certificates");
 
-  await prisma.education.create({
-    data: {
-      degree: normalizeText(formData.get("degree")),
-      university: normalizeText(formData.get("university")),
-      dates: normalizeText(formData.get("dates")),
-      results: normalizeText(formData.get("results")),
-      imageUrl,
-      order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
-    },
-  });
+    await prisma.education.create({
+      data: {
+        degree: normalizeText(formData.get("degree")),
+        university: normalizeText(formData.get("university")),
+        dates: normalizeText(formData.get("dates")),
+        results: normalizeText(formData.get("results")),
+        imageUrl,
+        order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
+      },
+    });
 
-  revalidatePath("/");
-  revalidatePath("/admin");
-  revalidatePath("/admin/education");
-  redirect("/admin/education");
+    revalidatePath("/");
+    revalidatePath("/admin");
+    revalidatePath("/admin/education");
+
+    return {
+      ok: true,
+      message: "Education saved.",
+      media: {
+        imageUrl: imageUrl ?? "",
+      },
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Failed to save education entry.",
+    };
+  }
 }
 
-export async function updateEducation(id: string, formData: FormData) {
-  const existing = await prisma.education.findUnique({ where: { id } });
-  if (!existing) throw new Error("Education entry not found.");
+export async function updateEducation(id: string, _previousState: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  try {
+    const existing = await prisma.education.findUnique({ where: { id } });
+    if (!existing) {
+      return { ok: false, message: "Education entry not found." };
+    }
 
-  const orderValue = Number(normalizeText(formData.get("order")));
-  const imageUrl = await resolveMediaField(
-    formData,
-    "imageFile",
-    "imageUrl",
-    "education/certificates",
-  );
+    const orderValue = Number(normalizeText(formData.get("order")));
+    const imageUrl = await resolveMediaField(
+      formData,
+      "imageFile",
+      "imageUrl",
+      "education/certificates",
+    );
 
-  await prisma.education.update({
-    where: { id },
-    data: {
-      degree: normalizeText(formData.get("degree")),
-      university: normalizeText(formData.get("university")),
-      dates: normalizeText(formData.get("dates")),
-      results: normalizeText(formData.get("results")),
-      imageUrl,
-      order: Number.isFinite(orderValue) ? orderValue : existing.order,
-    },
-  });
+    await prisma.education.update({
+      where: { id },
+      data: {
+        degree: normalizeText(formData.get("degree")),
+        university: normalizeText(formData.get("university")),
+        dates: normalizeText(formData.get("dates")),
+        results: normalizeText(formData.get("results")),
+        imageUrl,
+        order: Number.isFinite(orderValue) ? orderValue : existing.order,
+      },
+    });
 
-  revalidatePath("/");
-  revalidatePath("/admin");
-  revalidatePath("/admin/education");
-  redirect("/admin/education");
+    revalidatePath("/");
+    revalidatePath("/admin");
+    revalidatePath("/admin/education");
+
+    return {
+      ok: true,
+      message: "Education updated.",
+      media: {
+        imageUrl: imageUrl ?? "",
+      },
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Failed to update education entry.",
+    };
+  }
 }
 
 export async function deleteEducation(id: string) {
@@ -317,7 +387,6 @@ export async function deleteEducation(id: string) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/education");
-  redirect("/admin/education");
 }
 
 export async function reorderEducation(ids: string[]) {
@@ -327,54 +396,84 @@ export async function reorderEducation(ids: string[]) {
   revalidatePath("/admin/education");
 }
 
-export async function addAchievement(formData: FormData) {
-  const maxOrder = await prisma.achievement.aggregate({ _max: { order: true } });
-  const orderValue = Number(normalizeText(formData.get("order")));
-  const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "achievements/certificates");
+export async function addAchievement(_previousState: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  try {
+    const maxOrder = await prisma.achievement.aggregate({ _max: { order: true } });
+    const orderValue = Number(normalizeText(formData.get("order")));
+    const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "achievements/certificates");
 
-  await prisma.achievement.create({
-    data: {
-      title: normalizeText(formData.get("title")),
-      event: normalizeText(formData.get("event")),
-      icon: normalizeAchievementType(normalizeText(formData.get("icon"))),
-      imageUrl,
-      order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
-    },
-  });
+    await prisma.achievement.create({
+      data: {
+        title: normalizeText(formData.get("title")),
+        event: normalizeText(formData.get("event")),
+        icon: normalizeAchievementType(normalizeText(formData.get("icon"))),
+        imageUrl,
+        order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
+      },
+    });
 
-  revalidatePath("/");
-  revalidatePath("/admin");
-  revalidatePath("/admin/achievements");
-  redirect("/admin/achievements");
+    revalidatePath("/");
+    revalidatePath("/admin");
+    revalidatePath("/admin/achievements");
+
+    return {
+      ok: true,
+      message: "Achievement saved.",
+      media: {
+        imageUrl: imageUrl ?? "",
+      },
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Failed to save achievement.",
+    };
+  }
 }
 
-export async function updateAchievement(id: string, formData: FormData) {
-  const existing = await prisma.achievement.findUnique({ where: { id } });
-  if (!existing) throw new Error("Achievement not found.");
+export async function updateAchievement(id: string, _previousState: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  try {
+    const existing = await prisma.achievement.findUnique({ where: { id } });
+    if (!existing) {
+      return { ok: false, message: "Achievement not found." };
+    }
 
-  const orderValue = Number(normalizeText(formData.get("order")));
-  const imageUrl = await resolveMediaField(
-    formData,
-    "imageFile",
-    "imageUrl",
-    "achievements/certificates",
-  );
+    const orderValue = Number(normalizeText(formData.get("order")));
+    const imageUrl = await resolveMediaField(
+      formData,
+      "imageFile",
+      "imageUrl",
+      "achievements/certificates",
+    );
 
-  await prisma.achievement.update({
-    where: { id },
-    data: {
-      title: normalizeText(formData.get("title")),
-      event: normalizeText(formData.get("event")),
-      icon: normalizeAchievementType(normalizeText(formData.get("icon")) || existing.icon),
-      imageUrl,
-      order: Number.isFinite(orderValue) ? orderValue : existing.order,
-    },
-  });
+    await prisma.achievement.update({
+      where: { id },
+      data: {
+        title: normalizeText(formData.get("title")),
+        event: normalizeText(formData.get("event")),
+        icon: normalizeAchievementType(normalizeText(formData.get("icon")) || existing.icon),
+        imageUrl,
+        order: Number.isFinite(orderValue) ? orderValue : existing.order,
+      },
+    });
 
-  revalidatePath("/");
-  revalidatePath("/admin");
-  revalidatePath("/admin/achievements");
-  redirect("/admin/achievements");
+    revalidatePath("/");
+    revalidatePath("/admin");
+    revalidatePath("/admin/achievements");
+
+    return {
+      ok: true,
+      message: "Achievement updated.",
+      media: {
+        imageUrl: imageUrl ?? "",
+      },
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Failed to update achievement.",
+    };
+  }
 }
 
 export async function deleteAchievement(id: string) {
@@ -382,7 +481,6 @@ export async function deleteAchievement(id: string) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/achievements");
-  redirect("/admin/achievements");
 }
 
 export async function reorderAchievements(ids: string[]) {
@@ -392,64 +490,94 @@ export async function reorderAchievements(ids: string[]) {
   revalidatePath("/admin/achievements");
 }
 
-export async function addReference(formData: FormData) {
-  const maxOrder = await prisma.reference.aggregate({ _max: { order: true } });
-  const orderValue = Number(normalizeText(formData.get("order")));
-  const photoUrl = await resolveMediaField(formData, "photoFile", "photoUrl", "references/photos");
+export async function addReference(_previousState: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  try {
+    const maxOrder = await prisma.reference.aggregate({ _max: { order: true } });
+    const orderValue = Number(normalizeText(formData.get("order")));
+    const photoUrl = await resolveMediaField(formData, "photoFile", "photoUrl", "references/photos");
 
-  await prisma.reference.create({
-    data: {
-      quote: normalizeText(formData.get("quote")),
-      name: normalizeText(formData.get("name")),
-      role: normalizeText(formData.get("role")),
-      company: normalizeOptionalUrl(normalizeText(formData.get("company"))),
-      dateLabel: normalizeOptionalUrl(normalizeText(formData.get("dateLabel"))),
-      photoUrl,
-      source: normalizeOptionalUrl(normalizeText(formData.get("source"))),
-      sourceUrl: normalizeOptionalUrl(normalizeText(formData.get("sourceUrl"))),
-      isFeatured: normalizeText(formData.get("isFeatured")) === "on",
-      order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
-    },
-  });
+    await prisma.reference.create({
+      data: {
+        quote: normalizeText(formData.get("quote")),
+        name: normalizeText(formData.get("name")),
+        role: normalizeText(formData.get("role")),
+        company: normalizeOptionalUrl(normalizeText(formData.get("company"))),
+        dateLabel: normalizeOptionalUrl(normalizeText(formData.get("dateLabel"))),
+        photoUrl,
+        source: normalizeOptionalUrl(normalizeText(formData.get("source"))),
+        sourceUrl: normalizeOptionalUrl(normalizeText(formData.get("sourceUrl"))),
+        isFeatured: normalizeText(formData.get("isFeatured")) === "on",
+        order: Number.isFinite(orderValue) ? orderValue : (maxOrder._max.order ?? -1) + 1,
+      },
+    });
 
-  revalidatePath("/");
-  revalidatePath("/admin");
-  revalidatePath("/admin/references");
-  redirect("/admin/references");
+    revalidatePath("/");
+    revalidatePath("/admin");
+    revalidatePath("/admin/references");
+
+    return {
+      ok: true,
+      message: "Reference saved.",
+      media: {
+        photoUrl: photoUrl ?? "",
+      },
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Failed to save reference.",
+    };
+  }
 }
 
-export async function updateReference(id: string, formData: FormData) {
-  const existing = await prisma.reference.findUnique({ where: { id } });
-  if (!existing) throw new Error("Reference not found.");
+export async function updateReference(id: string, _previousState: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  try {
+    const existing = await prisma.reference.findUnique({ where: { id } });
+    if (!existing) {
+      return { ok: false, message: "Reference not found." };
+    }
 
-  const orderValue = Number(normalizeText(formData.get("order")));
-  const photoUrl = await resolveMediaField(
-    formData,
-    "photoFile",
-    "photoUrl",
-    "references/photos",
-  );
+    const orderValue = Number(normalizeText(formData.get("order")));
+    const photoUrl = await resolveMediaField(
+      formData,
+      "photoFile",
+      "photoUrl",
+      "references/photos",
+    );
 
-  await prisma.reference.update({
-    where: { id },
-    data: {
-      quote: normalizeText(formData.get("quote")),
-      name: normalizeText(formData.get("name")),
-      role: normalizeText(formData.get("role")),
-      company: normalizeOptionalUrl(normalizeText(formData.get("company"))),
-      dateLabel: normalizeOptionalUrl(normalizeText(formData.get("dateLabel"))),
-      photoUrl,
-      source: normalizeOptionalUrl(normalizeText(formData.get("source"))),
-      sourceUrl: normalizeOptionalUrl(normalizeText(formData.get("sourceUrl"))),
-      isFeatured: normalizeText(formData.get("isFeatured")) === "on",
-      order: Number.isFinite(orderValue) ? orderValue : existing.order,
-    },
-  });
+    await prisma.reference.update({
+      where: { id },
+      data: {
+        quote: normalizeText(formData.get("quote")),
+        name: normalizeText(formData.get("name")),
+        role: normalizeText(formData.get("role")),
+        company: normalizeOptionalUrl(normalizeText(formData.get("company"))),
+        dateLabel: normalizeOptionalUrl(normalizeText(formData.get("dateLabel"))),
+        photoUrl,
+        source: normalizeOptionalUrl(normalizeText(formData.get("source"))),
+        sourceUrl: normalizeOptionalUrl(normalizeText(formData.get("sourceUrl"))),
+        isFeatured: normalizeText(formData.get("isFeatured")) === "on",
+        order: Number.isFinite(orderValue) ? orderValue : existing.order,
+      },
+    });
 
-  revalidatePath("/");
-  revalidatePath("/admin");
-  revalidatePath("/admin/references");
-  redirect("/admin/references");
+    revalidatePath("/");
+    revalidatePath("/admin");
+    revalidatePath("/admin/references");
+
+    return {
+      ok: true,
+      message: "Reference updated.",
+      media: {
+        photoUrl: photoUrl ?? "",
+      },
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Failed to update reference.",
+    };
+  }
 }
 
 export async function deleteReference(id: string) {
@@ -457,7 +585,6 @@ export async function deleteReference(id: string) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/references");
-  redirect("/admin/references");
 }
 
 export async function reorderReferences(ids: string[]) {
@@ -483,7 +610,6 @@ export async function addSkill(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/skills");
-  redirect("/admin/skills");
 }
 
 export async function updateSkill(id: string, formData: FormData) {
@@ -505,7 +631,6 @@ export async function updateSkill(id: string, formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/skills");
-  redirect("/admin/skills");
 }
 
 export async function deleteSkill(id: string) {
@@ -513,7 +638,6 @@ export async function deleteSkill(id: string) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/skills");
-  redirect("/admin/skills");
 }
 
 export async function reorderSkills(ids: string[]) {

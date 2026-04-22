@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import AdminFileDropInput from "@/components/admin/AdminFileDropInput";
 import AdminSortableList from "@/components/admin/AdminSortableList";
+import AdminManagedActionForm from "@/components/admin/AdminManagedActionForm";
+import AdminSubmitButton from "@/components/admin/AdminSubmitButton";
 import { isStorageConfigured } from "@/lib/storage";
 import { addAchievement, deleteAchievement, reorderAchievements, updateAchievement } from "../actions";
 
@@ -62,7 +64,13 @@ export default async function AdminAchievementsPage() {
       <div className="grid gap-8 xl:grid-cols-[0.95fr_1.25fr]">
         <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
           <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Add Achievement</h2>
-          <form action={addAchievement} className="space-y-4">
+          <AdminManagedActionForm
+            action={addAchievement}
+            className="space-y-4"
+            mediaFieldNames={["imageUrl"]}
+            refreshOnSuccess
+            resetOnSuccess
+          >
             <input
               name="title"
               required
@@ -108,10 +116,12 @@ export default async function AdminAchievementsPage() {
               />
               <AdminFileDropInput name="imageFile" accept="image/*" label="Upload Achievement Image" helperText="Drop a certificate, badge, or award image here." />
             </div>
-            <button type="submit" className="w-full rounded-md bg-indigo-600 py-2 font-medium text-white hover:bg-indigo-700">
-              Save Achievement
-            </button>
-          </form>
+            <AdminSubmitButton
+              idleLabel="Save Achievement"
+              pendingLabel="Uploading image..."
+              className="w-full rounded-md bg-indigo-600 py-2 font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
+            />
+          </AdminManagedActionForm>
         </section>
 
         <section className="space-y-4">
@@ -134,12 +144,10 @@ export default async function AdminAchievementsPage() {
                 </summary>
 
                 <div className="mt-5 space-y-4 border-t border-gray-200 pt-5 dark:border-gray-800">
-                  <form
-                    action={async (formData) => {
-                      "use server";
-                      await updateAchievement(entry.id, formData);
-                    }}
+                  <AdminManagedActionForm
+                    action={updateAchievement.bind(null, entry.id)}
                     className="space-y-4"
+                    mediaFieldNames={["imageUrl"]}
                   >
                     <input
                       name="title"
@@ -187,10 +195,12 @@ export default async function AdminAchievementsPage() {
                     />
                     <AdminFileDropInput name="imageFile" accept="image/*" label="Upload New Achievement Image" helperText="Drop a replacement image here or click to browse." />
                   </div>
-                    <button type="submit" className="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700">
-                      Update Achievement
-                    </button>
-                  </form>
+                    <AdminSubmitButton
+                      idleLabel="Update Achievement"
+                      pendingLabel="Uploading image..."
+                      className="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
+                    />
+                  </AdminManagedActionForm>
                   <form
                     action={async () => {
                       "use server";
