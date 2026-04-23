@@ -58,6 +58,17 @@ export default function Hero({ content }: { content: HeroContent }) {
               Get In Touch
             </a>
           </div>
+
+          <div className="mt-4 flex justify-center sm:mt-5">
+            <a
+              href="/assets/docs/Resume_Ajay_Chodankar.pdf"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center rounded-full border border-cyan-300/25 bg-cyan-300/8 px-6 py-3 text-sm font-semibold text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-300/40 hover:bg-cyan-300/12 hover:text-white sm:px-7"
+            >
+              View / Download Resume
+            </a>
+          </div>
         </motion.div>
 
         <motion.div
