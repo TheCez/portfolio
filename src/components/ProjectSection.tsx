@@ -34,13 +34,11 @@ function getProjectCover(project: Project) {
   if (project.imageUrl) {
     return {
       imageUrl: project.imageUrl,
-      isLogoOnly: true,
     };
   }
 
   return {
     imageUrl: gallery[0] ?? getProjectImage(project),
-    isLogoOnly: false,
   };
 }
 
@@ -203,13 +201,9 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                   <img
                     src={cover.imageUrl}
                     alt={`${project.title} preview`}
-                    className={`h-full w-full transition duration-500 group-hover:scale-[1.03] ${
-                      cover.isLogoOnly ? "bg-slate-950/70 object-contain p-6 sm:p-8" : "object-cover"
-                    }`}
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                   />
-                  {!cover.isLogoOnly ? (
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#09111f] via-transparent to-transparent" />
-                  ) : null}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#09111f] via-transparent to-transparent" />
                   <div className="absolute right-4 top-4 flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 px-3 py-1.5 text-xs text-slate-200 backdrop-blur-xl">
                     <PlayCircle size={14} className="text-cyan-300" />
                     {project.videoUrl ? "Media attached" : "Case study"}
