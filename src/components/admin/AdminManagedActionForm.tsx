@@ -68,7 +68,10 @@ export default function AdminManagedActionForm({
         if (!form) return;
 
         const fileInputs = Array.from(form.querySelectorAll('input[type="file"]'));
-        const totalBytes = fileInputs.reduce((sum, input) => sum + (input.files?.[0]?.size ?? 0), 0);
+        const totalBytes = fileInputs.reduce((sum, input) => {
+          const files = Array.from(input.files ?? []);
+          return sum + files.reduce((fileSum, file) => fileSum + file.size, 0);
+        }, 0);
 
         if (totalBytes > MAX_SERVER_ACTION_UPLOAD_BYTES) {
           event.preventDefault();

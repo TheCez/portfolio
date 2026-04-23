@@ -8,9 +8,16 @@ type AdminFileDropInputProps = {
   accept: string;
   label: string;
   helperText?: string;
+  multiple?: boolean;
 };
 
-export default function AdminFileDropInput({ name, accept, label, helperText }: AdminFileDropInputProps) {
+function getFileLabel(files: FileList | null, fallback: string) {
+  if (!files?.length) return fallback;
+  if (files.length === 1) return files[0]?.name ?? fallback;
+  return `${files.length} files selected`;
+}
+
+export default function AdminFileDropInput({ name, accept, label, helperText, multiple = false }: AdminFileDropInputProps) {
   const id = useId();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -53,7 +60,7 @@ export default function AdminFileDropInput({ name, accept, label, helperText }: 
           const files = event.dataTransfer.files;
           if (!files.length || !inputRef.current) return;
           inputRef.current.files = files;
-          setFileName(files[0]?.name ?? "");
+          setFileName(getFileLabel(files, ""));
         }}
         onClick={() => inputRef.current?.click()}
         className={`cursor-pointer rounded-xl border border-dashed px-4 py-5 transition ${
@@ -62,14 +69,15 @@ export default function AdminFileDropInput({ name, accept, label, helperText }: 
             : "border-gray-300 bg-gray-50/70 hover:border-indigo-300 hover:bg-indigo-50/60 dark:border-gray-700 dark:bg-gray-950/50 dark:hover:border-indigo-400/30 dark:hover:bg-indigo-900/10"
         }`}
       >
-          <input
+        <input
           id={id}
           ref={inputRef}
           name={name}
           type="file"
           accept={accept}
+          multiple={multiple}
           className="hidden"
-          onChange={(event) => setFileName(event.target.files?.[0]?.name ?? "")}
+          onChange={(event) => setFileName(getFileLabel(event.target.files, ""))}
         />
         <div className="flex items-center gap-3">
           <div className="rounded-xl border border-gray-200 bg-white p-3 text-indigo-500 dark:border-gray-700 dark:bg-gray-900">

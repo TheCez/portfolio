@@ -87,6 +87,7 @@ async function main() {
       {
         title: "Agentic AI for Medical Data Simplification",
         description: "AI-powered patient report generation that simplifies and summarizes medical conditions and prescriptions in clear, concise terms.",
+        galleryUrls: "[]",
         repoUrl: "https://github.com/TheCez/medical-ai",
         videoUrl: "/assets/videos/medical_demo_placeholder.mp4",
         techTags: "RAG,CrewAI,Google Gemini API,Multi-Agent System",
@@ -101,6 +102,7 @@ async function main() {
       {
         title: "Image-to-BIM Generative AI Pipeline",
         description: "End-to-end Generative AI pipeline that transforms 2D architectural images into 3D CAD-ready models using Multimodal LLMs.",
+        galleryUrls: "[]",
         repoUrl: "https://github.com/TheCez/image-to-bim",
         videoUrl: "/assets/videos/bim_demo_placeholder.mp4",
         techTags: "Multimodal LLM,Three.js,FastAPI,IFC,BIM",
@@ -115,6 +117,7 @@ async function main() {
       {
         title: "Autonomous Solar Vehicle System",
         description: "Modular autonomous driving system with real-time computer vision for solar-powered vehicles.",
+        galleryUrls: "[]",
         repoUrl: "https://github.com/TheCez/solar-vehicle",
         videoUrl: "/assets/videos/solar_demo_placeholder.mp4",
         techTags: "YOLO,OpenCV,Nvidia Jetson,Raspberry Pi,Deep Learning",

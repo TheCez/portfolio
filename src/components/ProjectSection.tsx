@@ -4,12 +4,14 @@ import { motion } from "framer-motion";
 import { Code2, ExternalLink, PlayCircle, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import MarkdownContent from "./MarkdownContent";
 
 type Project = {
   id: string;
   title: string;
   description: string;
   imageUrl?: string | null;
+  galleryUrls?: string | null;
   repoUrl?: string | null;
   videoUrl?: string | null;
   techTags: string;
@@ -23,6 +25,24 @@ function getProjectImage(project: Project) {
   if (normalized.includes("medical")) return "/assets/images/medical_dashboard.png";
   if (normalized.includes("bim")) return "/assets/images/bim_interface.png";
   return "/assets/images/example.png";
+}
+
+function parseGalleryUrls(value?: string | null) {
+  if (!value) return [];
+
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return parsed.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+    }
+  } catch {
+    // Fall back to loose text parsing below.
+  }
+
+  return value
+    .split(/\r?\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 function parseHighlights(value: string) {
@@ -79,8 +99,6 @@ function getYoutubeEmbedUrl(url?: string | null) {
 export default function ProjectSection({ projects }: { projects: Project[] }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  if (projects.length === 0) return null;
-
   const selectedProject = useMemo(
     () => projects.find((project) => project.id === selectedId) ?? null,
     [projects, selectedId],
@@ -88,6 +106,10 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
   const selectedProjectYoutubeEmbed = useMemo(
     () => getYoutubeEmbedUrl(selectedProject?.videoUrl),
     [selectedProject?.videoUrl],
+  );
+  const selectedProjectGallery = useMemo(
+    () => parseGalleryUrls(selectedProject?.galleryUrls),
+    [selectedProject?.galleryUrls],
   );
 
   useEffect(() => {
@@ -101,6 +123,8 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
       body.style.overflow = previousOverflow;
     };
   }, [selectedProject]);
+
+  if (projects.length === 0) return null;
 
   return (
     <section id="projects" className="section-anchor">
@@ -146,8 +170,6 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                   <h3 className="mb-3 text-xl font-semibold text-white transition group-hover:text-cyan-200 sm:text-2xl">
                     {project.title}
                   </h3>
-                  <p className="mb-5 text-sm leading-7 text-slate-300">{project.description}</p>
-
                   <div className="mb-5 flex flex-wrap gap-2.5">
                     {techTags.map((tag) => (
                       <span
@@ -160,7 +182,7 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                   </div>
 
                   <ul className="mb-5 space-y-3">
-                    {highlights.slice(0, 3).map((highlight) => (
+                    {highlights.slice(0, 4).map((highlight) => (
                       <li key={highlight} className="flex gap-3 text-sm leading-7 text-slate-300">
                         <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-indigo-300 shadow-[0_0_14px_rgba(196,181,253,0.55)]" />
                         <span>{highlight}</span>
@@ -241,11 +263,27 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                     </Link>
                   )
                 ) : null}
+
+                {selectedProjectGallery.length > 0 ? (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {selectedProjectGallery.map((imageUrl, index) => (
+                      <div key={`${imageUrl}-${index}`} className="overflow-hidden rounded-[1.2rem] border border-white/10 bg-slate-950/70">
+                        <img
+                          src={imageUrl}
+                          alt={`${selectedProject.title} gallery image ${index + 1}`}
+                          className="aspect-[16/10] h-full w-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
               </div>
 
               <div className="flex flex-col">
                 <h3 className="mb-3 text-2xl font-semibold text-white sm:text-3xl">{selectedProject.title}</h3>
-                <p className="mb-5 text-sm leading-7 text-slate-300 sm:text-base sm:leading-8">{selectedProject.description}</p>
+                <div className="mb-5">
+                  <MarkdownContent value={selectedProject.description} />
+                </div>
 
                 <div className="mb-6 flex flex-wrap gap-2.5">
                   {selectedProject.techTags

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import AdminFileDropInput from "@/components/admin/AdminFileDropInput";
+import ProjectMarkdownEditor from "@/components/admin/ProjectMarkdownEditor";
 import AdminSortableList from "@/components/admin/AdminSortableList";
 import AdminManagedActionForm from "@/components/admin/AdminManagedActionForm";
 import AdminSubmitButton from "@/components/admin/AdminSubmitButton";
@@ -13,6 +14,21 @@ function formatHighlights(value: string) {
     const parsed = JSON.parse(value);
     if (Array.isArray(parsed)) {
       return parsed.join("\n");
+    }
+  } catch {
+    // Fall back below.
+  }
+
+  return value;
+}
+
+function formatGalleryUrls(value?: string | null) {
+  if (!value) return "";
+
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return parsed.filter((item): item is string => typeof item === "string" && item.trim().length > 0).join("\n");
     }
   } catch {
     // Fall back below.
@@ -66,7 +82,7 @@ export default async function AdminProjects() {
           <AdminManagedActionForm
             action={addProject}
             className="space-y-4"
-            mediaFieldNames={["imageUrl", "videoUrl"]}
+            mediaFieldNames={["imageUrl", "galleryUrls", "videoUrl"]}
             refreshOnSuccess
             resetOnSuccess
           >
@@ -75,10 +91,12 @@ export default async function AdminProjects() {
               <input name="title" required className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
             </div>
 
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-              <textarea name="description" required rows={3} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
-            </div>
+            <ProjectMarkdownEditor
+              name="description"
+              label="Full Project Details"
+              rows={8}
+              placeholder={"AI-assisted learning platform for nursing education...\n\n- Built the core web platform with onboarding and course management.\n- Implemented RAG-based study features using Qdrant.\n- Added voice and avatar interaction."}
+            />
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
@@ -102,6 +120,20 @@ export default async function AdminProjects() {
                 <input name="imageUrl" placeholder="https://... or /api/media/..." className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
               </div>
               <AdminFileDropInput name="imageFile" accept="image/*" label="Upload Image" helperText="Drop a project image here or click to browse." />
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Gallery Image URLs</label>
+                <textarea
+                  name="galleryUrls"
+                  rows={4}
+                  placeholder={"https://.../screenshot-1.png\n/api/media/projects/gallery/..."}
+                  className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white"
+                />
+                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Optional. Add one image URL per line. Uploaded gallery images are appended to this list.</p>
+              </div>
+              <AdminFileDropInput name="galleryFiles" accept="image/*" multiple label="Upload Gallery Images" helperText="Drop one or more extra project screenshots here." />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -153,17 +185,19 @@ export default async function AdminProjects() {
                 <AdminManagedActionForm
                   action={updateProject.bind(null, project.id)}
                   className="space-y-4"
-                  mediaFieldNames={["imageUrl", "videoUrl"]}
+                  mediaFieldNames={["imageUrl", "galleryUrls", "videoUrl"]}
                 >
                   <div>
                     <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
                     <input name="title" defaultValue={project.title} required className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
                   </div>
 
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-                    <textarea name="description" defaultValue={project.description} rows={3} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
-                  </div>
+                  <ProjectMarkdownEditor
+                    name="description"
+                    label="Full Project Details"
+                    defaultValue={project.description}
+                    rows={8}
+                  />
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
@@ -187,6 +221,20 @@ export default async function AdminProjects() {
                       <input name="imageUrl" defaultValue={project.imageUrl ?? ""} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
                     </div>
                     <AdminFileDropInput name="imageFile" accept="image/*" label="Upload New Image" helperText="Drag a replacement image here or click to browse." />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Gallery Image URLs</label>
+                      <textarea
+                        name="galleryUrls"
+                        rows={4}
+                        defaultValue={formatGalleryUrls(project.galleryUrls)}
+                        className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white"
+                      />
+                      <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">One image URL per line. Clear this field with no upload to remove gallery images.</p>
+                    </div>
+                    <AdminFileDropInput name="galleryFiles" accept="image/*" multiple label="Upload New Gallery Images" helperText="Drag one or more extra screenshots here or click to browse." />
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">

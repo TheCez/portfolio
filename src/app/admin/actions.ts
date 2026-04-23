@@ -120,6 +120,28 @@ async function resolveMediaField(
   return null;
 }
 
+async function resolveMediaListField(
+  formData: FormData,
+  fileField: string,
+  urlField: string,
+  folder: string,
+) {
+  const typedUrls = normalizeText(formData.get(urlField))
+    .split(/\r?\n|,/)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  const files = formData
+    .getAll(fileField)
+    .filter((file): file is File => file instanceof File && file.size > 0);
+
+  if (files.length > 0 && !isStorageConfigured()) {
+    throw new Error("Storage is not configured. Add MinIO/S3 environment variables before uploading files.");
+  }
+
+  const uploadedUrls = await Promise.all(files.map((file) => uploadFileToStorage(file, folder)));
+  return JSON.stringify([...typedUrls, ...uploadedUrls]);
+}
+
 export async function addProject(_previousState: AdminActionState, formData: FormData): Promise<AdminActionState> {
   try {
     const title = normalizeText(formData.get("title"));
@@ -130,6 +152,7 @@ export async function addProject(_previousState: AdminActionState, formData: For
     const orderValue = Number(normalizeText(formData.get("order")));
 
     const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "projects/images");
+    const galleryUrls = await resolveMediaListField(formData, "galleryFiles", "galleryUrls", "projects/gallery");
     const videoUrl = await resolveMediaField(formData, "videoFile", "videoUrl", "projects/videos");
 
     const maxOrder = await prisma.project.aggregate({ _max: { order: true } });
@@ -141,6 +164,7 @@ export async function addProject(_previousState: AdminActionState, formData: For
         techTags,
         repoUrl,
         imageUrl,
+        galleryUrls,
         videoUrl,
         highlights,
         isEnabled: normalizeCheckbox(formData.get("isEnabled")),
@@ -157,6 +181,7 @@ export async function addProject(_previousState: AdminActionState, formData: For
       message: "Project saved.",
       media: {
         imageUrl: imageUrl ?? "",
+        galleryUrls: JSON.parse(galleryUrls).join("\n"),
         videoUrl: videoUrl ?? "",
       },
     };
@@ -176,6 +201,7 @@ export async function updateProject(id: string, _previousState: AdminActionState
     }
 
     const imageUrl = await resolveMediaField(formData, "imageFile", "imageUrl", "projects/images");
+    const galleryUrls = await resolveMediaListField(formData, "galleryFiles", "galleryUrls", "projects/gallery");
     const videoUrl = await resolveMediaField(formData, "videoFile", "videoUrl", "projects/videos");
     const orderValue = Number(normalizeText(formData.get("order")));
 
@@ -187,6 +213,7 @@ export async function updateProject(id: string, _previousState: AdminActionState
         techTags: normalizeCsv(normalizeText(formData.get("techTags"))),
         repoUrl: normalizeOptionalUrl(normalizeText(formData.get("repoUrl"))),
         imageUrl,
+        galleryUrls,
         videoUrl,
         highlights: normalizeList(normalizeText(formData.get("highlights"))),
         isEnabled: normalizeCheckbox(formData.get("isEnabled")),
@@ -203,6 +230,7 @@ export async function updateProject(id: string, _previousState: AdminActionState
       message: "Project updated.",
       media: {
         imageUrl: imageUrl ?? "",
+        galleryUrls: JSON.parse(galleryUrls).join("\n"),
         videoUrl: videoUrl ?? "",
       },
     };
