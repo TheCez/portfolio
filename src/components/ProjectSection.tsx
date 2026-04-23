@@ -386,7 +386,7 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                     ))}
                 </div>
 
-                <div className="mb-7 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-5">
+                <div className="mb-7 border-t border-cyan-300/10 pt-6">
                   <h4 className="mb-4 text-lg font-semibold text-white">Project Highlights</h4>
                   <ul className="space-y-3">
                     {parseHighlights(selectedProject.highlights).map((highlight) => (
