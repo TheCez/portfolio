@@ -31,10 +31,16 @@ function getProjectImage(project: Project) {
 
 function getProjectCover(project: Project) {
   const gallery = parseGalleryUrls(project.galleryUrls);
+  if (project.imageUrl) {
+    return {
+      imageUrl: project.imageUrl,
+      isLogoOnly: true,
+    };
+  }
 
   return {
     imageUrl: gallery[0] ?? getProjectImage(project),
-    isLogoOnly: gallery.length === 0 && Boolean(project.imageUrl),
+    isLogoOnly: false,
   };
 }
 
@@ -198,10 +204,12 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                     src={cover.imageUrl}
                     alt={`${project.title} preview`}
                     className={`h-full w-full transition duration-500 group-hover:scale-[1.03] ${
-                      cover.isLogoOnly ? "bg-slate-950/70 object-contain p-8" : "object-cover"
+                      cover.isLogoOnly ? "bg-slate-950/70 object-contain p-6 sm:p-8" : "object-cover"
                     }`}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#09111f] via-transparent to-transparent" />
+                  {!cover.isLogoOnly ? (
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#09111f] via-transparent to-transparent" />
+                  ) : null}
                   <div className="absolute right-4 top-4 flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 px-3 py-1.5 text-xs text-slate-200 backdrop-blur-xl">
                     <PlayCircle size={14} className="text-cyan-300" />
                     {project.videoUrl ? "Media attached" : "Case study"}
@@ -319,17 +327,14 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                   <button
                     type="button"
                     onClick={() => setLightboxImage(selectedProjectLogo)}
-                    className="group/logo relative flex min-h-64 items-center justify-center overflow-hidden rounded-[1.4rem] border border-white/10 bg-[radial-gradient(circle_at_center,rgba(103,232,249,0.10),rgba(15,23,42,0.72)_45%,rgba(2,6,23,0.95))] p-8 transition hover:border-cyan-300/40"
+                    className="group/logo relative flex aspect-[16/10] items-center justify-center overflow-hidden rounded-[1.4rem] border border-white/10 bg-slate-950/70 p-3 transition hover:border-cyan-300/40"
                     aria-label={`Expand ${selectedProject.title} logo`}
                   >
                     <img
                       src={selectedProjectLogo}
                       alt={`${selectedProject.title} logo`}
-                      className="max-h-40 w-full max-w-md object-contain transition group-hover/logo:scale-[1.03]"
+                      className="h-full w-full object-contain transition group-hover/logo:scale-[1.02]"
                     />
-                    <span className="absolute bottom-4 right-4 rounded-full border border-white/10 bg-slate-950/70 px-3 py-1.5 text-xs font-medium text-slate-100 backdrop-blur-xl">
-                      Project logo
-                    </span>
                   </button>
                 ) : null}
 
