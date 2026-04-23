@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Code2, ExternalLink, PlayCircle, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import ImageLightbox from "./ImageLightbox";
 import MarkdownContent from "./MarkdownContent";
 
 type Project = {
@@ -106,6 +107,8 @@ function getYoutubeEmbedUrl(url?: string | null) {
 
 export default function ProjectSection({ projects }: { projects: Project[] }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   const selectedProject = useMemo(
     () => projects.find((project) => project.id === selectedId) ?? null,
@@ -119,6 +122,12 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
     () => parseGalleryUrls(selectedProject?.galleryUrls),
     [selectedProject?.galleryUrls],
   );
+  const selectedProjectImages = useMemo(() => {
+    if (!selectedProject) return [];
+
+    return Array.from(new Set([getProjectImage(selectedProject), ...selectedProjectGallery]));
+  }, [selectedProject, selectedProjectGallery]);
+  const activeProjectImage = selectedProjectImages[selectedMediaIndex] ?? selectedProjectImages[0] ?? null;
 
   useEffect(() => {
     if (!selectedProject) return;
@@ -131,6 +140,18 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
       body.style.overflow = previousOverflow;
     };
   }, [selectedProject]);
+
+  function openProject(projectId: string) {
+    setSelectedMediaIndex(0);
+    setLightboxImage(null);
+    setSelectedId(projectId);
+  }
+
+  function closeProject() {
+    setLightboxImage(null);
+    setSelectedId(null);
+    setSelectedMediaIndex(0);
+  }
 
   if (projects.length === 0) return null;
 
@@ -160,7 +181,7 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ delay: idx * 0.05 }}
-                onClick={() => setSelectedId(project.id)}
+                onClick={() => openProject(project.id)}
                 className="surface-outline glass-panel group flex h-full flex-col overflow-hidden rounded-[1.8rem] text-left transition hover:-translate-y-2 hover:[box-shadow:0_28px_90px_rgba(3,8,20,0.55),0_0_40px_rgba(124,140,255,0.18)]"
               >
                 <div className="relative aspect-[16/10] overflow-hidden border-b border-white/10">
@@ -218,11 +239,11 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
 
       {selectedProject ? (
         <div className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-black/75 px-3 pb-4 pt-24 backdrop-blur-md sm:px-4 sm:pb-6 sm:pt-28">
-          <div className="surface-outline glass-panel relative w-full max-w-5xl overflow-hidden rounded-[1.6rem] sm:max-h-[calc(100vh-8.5rem)] sm:overflow-y-auto sm:rounded-[2rem]">
+          <div className="surface-outline glass-panel relative w-full max-w-[min(92rem,calc(100vw-2rem))] overflow-hidden rounded-[1.6rem] sm:max-h-[calc(100vh-8.5rem)] sm:overflow-y-auto sm:rounded-[2rem]">
             <div className="sticky top-0 z-20 flex justify-end border-b border-white/10 bg-[#0c1526]/92 px-4 py-3 backdrop-blur-xl sm:hidden">
               <button
                 type="button"
-                onClick={() => setSelectedId(null)}
+                onClick={closeProject}
                 className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
                 aria-label="Close project details"
               >
@@ -232,22 +253,58 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
 
             <button
               type="button"
-              onClick={() => setSelectedId(null)}
+              onClick={closeProject}
               className="absolute right-4 top-4 z-20 hidden h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10 sm:inline-flex"
               aria-label="Close project details"
             >
               <X size={18} />
             </button>
 
-            <div className="grid gap-7 p-4 sm:p-5 md:grid-cols-[1.05fr_0.95fr] md:p-7 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="grid gap-7 p-4 sm:p-5 md:p-7 lg:grid-cols-[minmax(0,1.18fr)_minmax(25rem,0.82fr)] xl:gap-9 xl:p-8">
               <div className="space-y-5">
-                <div className="relative overflow-hidden rounded-[1.4rem] border border-white/10 bg-slate-950/70">
-                  <img
-                    src={getProjectImage(selectedProject)}
-                    alt={`${selectedProject.title} preview`}
-                    className="h-auto w-full object-cover"
-                  />
-                </div>
+                {activeProjectImage ? (
+                  <div className="grid gap-3 lg:grid-cols-[5rem_minmax(0,1fr)]">
+                    {selectedProjectImages.length > 1 ? (
+                      <div className="order-2 flex gap-2 overflow-x-auto pb-1 lg:order-1 lg:max-h-[34rem] lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden lg:pb-0 lg:pr-1">
+                        {selectedProjectImages.map((imageUrl, index) => (
+                          <button
+                            key={`${imageUrl}-${index}`}
+                            type="button"
+                            onClick={() => setSelectedMediaIndex(index)}
+                            className={`h-16 w-20 shrink-0 overflow-hidden rounded-xl border bg-slate-950/70 p-1 transition lg:h-20 lg:w-20 ${
+                              index === selectedMediaIndex
+                                ? "border-cyan-300 shadow-[0_0_24px_rgba(103,232,249,0.25)]"
+                                : "border-white/10 hover:border-white/30"
+                            }`}
+                            aria-label={`Show ${selectedProject.title} image ${index + 1}`}
+                          >
+                            <img
+                              src={imageUrl}
+                              alt={`${selectedProject.title} thumbnail ${index + 1}`}
+                              className="h-full w-full rounded-lg object-cover"
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+
+                    <button
+                      type="button"
+                      onClick={() => setLightboxImage(activeProjectImage)}
+                      className="order-1 relative overflow-hidden rounded-[1.4rem] border border-white/10 bg-slate-950/70 transition hover:border-cyan-300/40 lg:order-2"
+                      aria-label={`Expand ${selectedProject.title} image`}
+                    >
+                      <img
+                        src={activeProjectImage}
+                        alt={`${selectedProject.title} preview`}
+                        className="aspect-[16/10] h-full w-full object-contain"
+                      />
+                      <span className="absolute bottom-4 right-4 rounded-full border border-white/10 bg-slate-950/70 px-3 py-1.5 text-xs font-medium text-slate-100 backdrop-blur-xl">
+                        Click to expand
+                      </span>
+                    </button>
+                  </div>
+                ) : null}
 
                 {selectedProject.videoUrl ? (
                   isDirectVideo(selectedProject.videoUrl) ? (
@@ -279,18 +336,10 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                   )
                 ) : null}
 
-                {selectedProjectGallery.length > 0 ? (
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {selectedProjectGallery.map((imageUrl, index) => (
-                      <div key={`${imageUrl}-${index}`} className="overflow-hidden rounded-[1.2rem] border border-white/10 bg-slate-950/70">
-                        <img
-                          src={imageUrl}
-                          alt={`${selectedProject.title} gallery image ${index + 1}`}
-                          className="aspect-[16/10] h-full w-full object-cover"
-                        />
-                      </div>
-                    ))}
-                  </div>
+                {selectedProjectImages.length > 1 ? (
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+                    {selectedMediaIndex + 1} / {selectedProjectImages.length} project images
+                  </p>
                 ) : null}
               </div>
 
@@ -348,6 +397,14 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
               </div>
             </div>
           </div>
+
+          {lightboxImage ? (
+            <ImageLightbox
+              mediaUrl={lightboxImage}
+              title={`${selectedProject.title} image`}
+              onClose={() => setLightboxImage(null)}
+            />
+          ) : null}
         </div>
       ) : null}
     </section>

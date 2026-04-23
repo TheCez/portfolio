@@ -32,7 +32,7 @@ export default function ImageLightbox({ mediaUrl, title, onClose }: ImageLightbo
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-black/80 px-3 pb-4 pt-24 backdrop-blur-md sm:px-4 sm:pb-6 sm:pt-28">
+    <div className="fixed inset-0 z-[90] flex items-start justify-center overflow-y-auto bg-black/80 px-3 pb-4 pt-24 backdrop-blur-md sm:px-4 sm:pb-6 sm:pt-28">
       <div className="surface-outline glass-panel relative w-full max-w-4xl overflow-hidden rounded-[1.6rem] sm:max-h-[calc(100vh-8.5rem)] sm:rounded-[2rem]">
         <div className="sticky top-0 z-20 flex justify-end border-b border-white/10 bg-[#0c1526]/92 px-4 py-3 backdrop-blur-xl sm:hidden">
           <button
