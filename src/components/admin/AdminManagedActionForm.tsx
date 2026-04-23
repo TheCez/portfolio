@@ -27,11 +27,15 @@ export default function AdminManagedActionForm({
 }: AdminManagedActionFormProps) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
+  const handledStateRef = useRef<AdminActionState | null>(null);
   const [clientError, setClientError] = useState("");
   const [state, formAction] = useActionState(action, initialAdminActionState);
 
   useEffect(() => {
     if (!state.ok || !formRef.current) return;
+    if (handledStateRef.current === state) return;
+
+    handledStateRef.current = state;
 
     setClientError("");
 
