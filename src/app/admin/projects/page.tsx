@@ -71,7 +71,7 @@ export default async function AdminProjects() {
         items={projects.map((project) => ({
           id: project.id,
           title: project.title,
-          subtitle: project.techTags,
+          subtitle: project.displayTags || project.techTags,
         }))}
         reorderAction={reorderProjects}
       />
@@ -110,8 +110,15 @@ export default async function AdminProjects() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Tech Tags (comma separated)</label>
-              <input name="techTags" required placeholder="React, Next.js, Prisma" className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Homepage Tags (short, comma separated)</label>
+              <input name="displayTags" placeholder="RAG, Healthcare AI, CrewAI" className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Shown on the project card. Keep this to 3-5 high-signal tags so the homepage stays clean.</p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Full Tech Stack (comma separated)</label>
+              <input name="techTags" required placeholder="React, Next.js, Prisma, PostgreSQL" className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Full technical inventory. This appears in the expanded project detail view.</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -169,7 +176,7 @@ export default async function AdminProjects() {
               <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
                 <div>
                   <h3 className="font-bold text-gray-900 dark:text-white">{project.title}</h3>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Order {project.order} · {project.techTags}</p>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Order {project.order} · {project.displayTags || project.techTags}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`rounded-full border px-3 py-1 text-xs ${project.isEnabled ? "border-emerald-300/30 text-emerald-500 dark:text-emerald-300" : "border-amber-300/30 text-amber-500 dark:text-amber-300"}`}>
@@ -211,7 +218,13 @@ export default async function AdminProjects() {
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Tech Tags</label>
+                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Homepage Tags</label>
+                    <input name="displayTags" defaultValue={project.displayTags} placeholder="RAG, Healthcare AI, CrewAI" className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Shown on homepage cards. Leave blank to fall back to the full tech stack.</p>
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Full Tech Stack</label>
                     <input name="techTags" defaultValue={project.techTags} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
                   </div>
 

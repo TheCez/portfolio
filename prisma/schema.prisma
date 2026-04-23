@@ -35,6 +35,7 @@ model Project {
   repoUrl     String?
   videoUrl    String?  // Can be local path or external link
   techTags    String   // Comma separated tags
+  displayTags String   @default("") // Short comma separated tags for homepage cards
   highlights  String   // JSON string or markdown of bullet points
   isEnabled   Boolean  @default(true)
   order       Int      @default(0)

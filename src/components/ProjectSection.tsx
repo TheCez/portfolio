@@ -15,6 +15,7 @@ type Project = {
   repoUrl?: string | null;
   videoUrl?: string | null;
   techTags: string;
+  displayTags?: string | null;
   highlights: string;
 };
 
@@ -58,6 +59,13 @@ function parseHighlights(value: string) {
   return value
     .split("\n")
     .map((line) => line.replace(/^[\-\u2022]\s*/, "").trim())
+    .filter(Boolean);
+}
+
+function parseTags(value?: string | null) {
+  return (value ?? "")
+    .split(",")
+    .map((tag) => tag.trim())
     .filter(Boolean);
 }
 
@@ -139,7 +147,9 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
 
         <div className="grid gap-5 sm:gap-7 lg:grid-cols-3">
           {projects.map((project, idx) => {
-            const techTags = project.techTags.split(",").map((tag) => tag.trim()).filter(Boolean);
+            const cardTags = parseTags(project.displayTags || project.techTags);
+            const visibleCardTags = cardTags.slice(0, 5);
+            const hiddenCardTagCount = Math.max(cardTags.length - visibleCardTags.length, 0);
             const highlights = parseHighlights(project.highlights);
 
             return (
@@ -171,7 +181,7 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                     {project.title}
                   </h3>
                   <div className="mb-5 flex flex-wrap gap-2.5">
-                    {techTags.map((tag) => (
+                    {visibleCardTags.map((tag) => (
                       <span
                         key={tag}
                         className="rounded-full border border-cyan-300/15 bg-cyan-300/8 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.08em] text-cyan-100/90"
@@ -179,6 +189,11 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                         {tag}
                       </span>
                     ))}
+                    {hiddenCardTagCount > 0 ? (
+                      <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium uppercase tracking-[0.08em] text-slate-300">
+                        +{hiddenCardTagCount} more
+                      </span>
+                    ) : null}
                   </div>
 
                   <ul className="mb-5 space-y-3">
@@ -286,11 +301,7 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                 </div>
 
                 <div className="mb-6 flex flex-wrap gap-2.5">
-                  {selectedProject.techTags
-                    .split(",")
-                    .map((tag) => tag.trim())
-                    .filter(Boolean)
-                    .map((tag) => (
+                  {parseTags(selectedProject.techTags).map((tag) => (
                       <span
                         key={tag}
                         className="rounded-full border border-cyan-300/15 bg-cyan-300/8 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.08em] text-cyan-100/90"

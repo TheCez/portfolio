@@ -147,6 +147,7 @@ export async function addProject(_previousState: AdminActionState, formData: For
     const title = normalizeText(formData.get("title"));
     const description = normalizeText(formData.get("description"));
     const techTags = normalizeCsv(normalizeText(formData.get("techTags")));
+    const displayTags = normalizeCsv(normalizeText(formData.get("displayTags")));
     const repoUrl = normalizeOptionalUrl(normalizeText(formData.get("repoUrl")));
     const highlights = normalizeList(normalizeText(formData.get("highlights")));
     const orderValue = Number(normalizeText(formData.get("order")));
@@ -162,6 +163,7 @@ export async function addProject(_previousState: AdminActionState, formData: For
         title,
         description,
         techTags,
+        displayTags,
         repoUrl,
         imageUrl,
         galleryUrls,
@@ -211,6 +213,7 @@ export async function updateProject(id: string, _previousState: AdminActionState
         title: normalizeText(formData.get("title")),
         description: normalizeText(formData.get("description")),
         techTags: normalizeCsv(normalizeText(formData.get("techTags"))),
+        displayTags: normalizeCsv(normalizeText(formData.get("displayTags"))),
         repoUrl: normalizeOptionalUrl(normalizeText(formData.get("repoUrl"))),
         imageUrl,
         galleryUrls,

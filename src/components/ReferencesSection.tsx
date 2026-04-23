@@ -73,7 +73,7 @@ export default function ReferencesSection({ references }: { references: Referenc
                   </div>
                 ) : null}
 
-                <p className="mb-6 whitespace-pre-line text-base leading-7 text-slate-100/92 sm:text-lg sm:leading-8">"{reference.quote}"</p>
+                <p className="mb-6 whitespace-pre-line text-base leading-7 text-slate-100/92 sm:text-lg sm:leading-8">&ldquo;{reference.quote}&rdquo;</p>
 
                 <div className="flex items-center gap-4">
                   <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/[0.04] text-slate-300">

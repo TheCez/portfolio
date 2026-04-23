@@ -28,8 +28,8 @@ export default function SetupPage() {
         if (result?.success) {
           window.location.assign("/api/auth/signin?callbackUrl=%2Fadmin");
         }
-      } catch (err: any) {
-        setError(err?.message ?? "Setup failed. Please try again.");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Setup failed. Please try again.");
       }
     });
   }

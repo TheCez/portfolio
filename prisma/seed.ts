@@ -91,6 +91,7 @@ async function main() {
         repoUrl: "https://github.com/TheCez/medical-ai",
         videoUrl: "/assets/videos/medical_demo_placeholder.mp4",
         techTags: "RAG,CrewAI,Google Gemini API,Multi-Agent System",
+        displayTags: "RAG, CrewAI, Healthcare AI",
         highlights: JSON.stringify([
           "Architected robust RAG system ensuring facts are grounded in original source data",
           "Engineered multi-agent AI system to autonomously manage summarization workflows",
@@ -106,6 +107,7 @@ async function main() {
         repoUrl: "https://github.com/TheCez/image-to-bim",
         videoUrl: "/assets/videos/bim_demo_placeholder.mp4",
         techTags: "Multimodal LLM,Three.js,FastAPI,IFC,BIM",
+        displayTags: "Multimodal AI, BIM, Three.js",
         highlights: JSON.stringify([
           "Architected end-to-end pipeline transforming 2D images into 3D CAD-ready models",
           "Engineered Agentic AI workflow to autonomously interpret structural features",
@@ -121,6 +123,7 @@ async function main() {
         repoUrl: "https://github.com/TheCez/solar-vehicle",
         videoUrl: "/assets/videos/solar_demo_placeholder.mp4",
         techTags: "YOLO,OpenCV,Nvidia Jetson,Raspberry Pi,Deep Learning",
+        displayTags: "YOLO, OpenCV, Robotics",
         highlights: JSON.stringify([
           "Designed plug-and-play modular architecture for rapid sensor integration",
           "Implemented real-time object detection using YOLO",
