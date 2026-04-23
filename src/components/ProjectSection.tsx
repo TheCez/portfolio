@@ -34,11 +34,13 @@ function getProjectCover(project: Project) {
   if (project.imageUrl) {
     return {
       imageUrl: project.imageUrl,
+      hasWhiteBackground: true,
     };
   }
 
   return {
     imageUrl: gallery[0] ?? getProjectImage(project),
+    hasWhiteBackground: false,
   };
 }
 
@@ -197,13 +199,25 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                 onClick={() => openProject(project.id)}
                 className="surface-outline glass-panel group flex h-full flex-col overflow-hidden rounded-[1.8rem] text-left transition hover:-translate-y-2 hover:[box-shadow:0_28px_90px_rgba(3,8,20,0.55),0_0_40px_rgba(124,140,255,0.18)]"
               >
-                <div className="relative aspect-[16/10] overflow-hidden border-b border-white/10">
-                  <img
-                    src={cover.imageUrl}
-                    alt={`${project.title} preview`}
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#09111f] via-transparent to-transparent" />
+                <div className={`relative aspect-[16/10] overflow-hidden border-b border-white/10 ${cover.hasWhiteBackground ? "bg-white" : ""}`}>
+                  {cover.hasWhiteBackground ? (
+                    <div className="flex h-full w-full items-center justify-center p-6 sm:p-8">
+                      <img
+                        src={cover.imageUrl}
+                        alt={`${project.title} logo`}
+                        className="max-h-full max-w-full object-contain transition duration-500 group-hover:scale-[1.03]"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <img
+                        src={cover.imageUrl}
+                        alt={`${project.title} preview`}
+                        className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#09111f] via-transparent to-transparent" />
+                    </>
+                  )}
                   <div className="absolute right-4 top-4 flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 px-3 py-1.5 text-xs text-slate-200 backdrop-blur-xl">
                     <PlayCircle size={14} className="text-cyan-300" />
                     {project.videoUrl ? "Media attached" : "Case study"}
@@ -321,7 +335,7 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                   <button
                     type="button"
                     onClick={() => setLightboxImage(selectedProjectLogo)}
-                    className="group/logo relative flex aspect-[16/10] items-center justify-center overflow-hidden rounded-[1.4rem] border border-white/10 bg-slate-950/70 p-3 transition hover:border-cyan-300/40"
+                    className="group/logo relative flex aspect-[16/10] items-center justify-center overflow-hidden rounded-[1.4rem] border border-white/10 bg-white p-6 transition hover:border-cyan-300/40 sm:p-8"
                     aria-label={`Expand ${selectedProject.title} logo`}
                   >
                     <img
