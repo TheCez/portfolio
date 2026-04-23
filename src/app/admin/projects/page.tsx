@@ -62,7 +62,7 @@ export default async function AdminProjects() {
         }`}
       >
         {storageReady
-          ? "Storage is configured. You can upload project images and demo videos from this page. Uploads replace saved URLs, and leaving a media URL blank with no upload clears it."
+          ? "Storage is configured. You can upload project logos, gallery screenshots, and demo videos from this page. Uploads replace saved URLs, and leaving a media URL blank with no upload clears it."
           : "Storage is not configured. URL fields still work, but uploads need the MinIO/S3 env vars enabled."}
       </div>
 
@@ -123,24 +123,25 @@ export default async function AdminProjects() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Image URL</label>
-                <input name="imageUrl" placeholder="https://... or /api/media/..." className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Logo URL</label>
+                <input name="imageUrl" placeholder="https://... or /api/media/projects/images/..." className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Optional project logo or cover fallback. Use gallery images below for screenshots shown in the carousel.</p>
               </div>
-              <AdminFileDropInput name="imageFile" accept="image/*" label="Upload Image" helperText="Drop a project image here or click to browse." />
+              <AdminFileDropInput name="imageFile" accept="image/*" label="Upload Logo" helperText="Drop a project logo here or click to browse." />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Gallery Image URLs</label>
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Carousel Screenshot URLs</label>
                 <textarea
                   name="galleryUrls"
                   rows={4}
                   placeholder={"https://.../screenshot-1.png\n/api/media/projects/gallery/..."}
                   className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white"
                 />
-                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Optional. Add one image URL per line. Uploaded gallery images are appended to this list.</p>
+                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Optional. Add one screenshot URL per line. These images power the project detail carousel.</p>
               </div>
-              <AdminFileDropInput name="galleryFiles" accept="image/*" multiple label="Upload Gallery Images" helperText="Drop one or more extra project screenshots here." />
+              <AdminFileDropInput name="galleryFiles" accept="image/*" multiple label="Upload Carousel Screenshots" helperText="Drop one or more project screenshots here." />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -230,24 +231,25 @@ export default async function AdminProjects() {
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Image URL</label>
+                      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Logo URL</label>
                       <input name="imageUrl" defaultValue={project.imageUrl ?? ""} className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white" />
+                      <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Optional logo or cover fallback. Screenshots should go in the carousel field below.</p>
                     </div>
-                    <AdminFileDropInput name="imageFile" accept="image/*" label="Upload New Image" helperText="Drag a replacement image here or click to browse." />
+                    <AdminFileDropInput name="imageFile" accept="image/*" label="Upload New Logo" helperText="Drag a replacement logo here or click to browse." />
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Gallery Image URLs</label>
+                      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Carousel Screenshot URLs</label>
                       <textarea
                         name="galleryUrls"
                         rows={4}
                         defaultValue={formatGalleryUrls(project.galleryUrls)}
                         className="w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:text-white"
                       />
-                      <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">One image URL per line. Clear this field with no upload to remove gallery images.</p>
+                      <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">One screenshot URL per line. Clear this field with no upload to remove carousel images.</p>
                     </div>
-                    <AdminFileDropInput name="galleryFiles" accept="image/*" multiple label="Upload New Gallery Images" helperText="Drag one or more extra screenshots here or click to browse." />
+                    <AdminFileDropInput name="galleryFiles" accept="image/*" multiple label="Upload New Carousel Screenshots" helperText="Drag one or more screenshots here or click to browse." />
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">

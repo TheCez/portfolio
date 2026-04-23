@@ -30,8 +30,8 @@ model Project {
   id          String   @id @default(cuid())
   title       String
   description String
-  imageUrl    String?
-  galleryUrls String   @default("[]") // JSON array of additional project image URLs
+  imageUrl    String?  // Project logo or cover fallback
+  galleryUrls String   @default("[]") // JSON array of project carousel screenshot URLs
   repoUrl     String?
   videoUrl    String?  // Can be local path or external link
   techTags    String   // Comma separated tags

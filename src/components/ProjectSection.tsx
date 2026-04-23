@@ -29,6 +29,15 @@ function getProjectImage(project: Project) {
   return "/assets/images/example.png";
 }
 
+function getProjectCover(project: Project) {
+  const gallery = parseGalleryUrls(project.galleryUrls);
+
+  return {
+    imageUrl: gallery[0] ?? getProjectImage(project),
+    isLogoOnly: gallery.length === 0 && Boolean(project.imageUrl),
+  };
+}
+
 function parseGalleryUrls(value?: string | null) {
   if (!value) return [];
 
@@ -123,11 +132,10 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
     [selectedProject?.galleryUrls],
   );
   const selectedProjectImages = useMemo(() => {
-    if (!selectedProject) return [];
-
-    return Array.from(new Set([getProjectImage(selectedProject), ...selectedProjectGallery]));
-  }, [selectedProject, selectedProjectGallery]);
+    return Array.from(new Set(selectedProjectGallery));
+  }, [selectedProjectGallery]);
   const activeProjectImage = selectedProjectImages[selectedMediaIndex] ?? selectedProjectImages[0] ?? null;
+  const selectedProjectLogo = selectedProject?.imageUrl ?? null;
 
   useEffect(() => {
     if (!selectedProject) return;
@@ -172,6 +180,7 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
             const visibleCardTags = cardTags.slice(0, 5);
             const hiddenCardTagCount = Math.max(cardTags.length - visibleCardTags.length, 0);
             const highlights = parseHighlights(project.highlights);
+            const cover = getProjectCover(project);
 
             return (
               <motion.button
@@ -186,9 +195,11 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
               >
                 <div className="relative aspect-[16/10] overflow-hidden border-b border-white/10">
                   <img
-                    src={getProjectImage(project)}
+                    src={cover.imageUrl}
                     alt={`${project.title} preview`}
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                    className={`h-full w-full transition duration-500 group-hover:scale-[1.03] ${
+                      cover.isLogoOnly ? "bg-slate-950/70 object-contain p-8" : "object-cover"
+                    }`}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#09111f] via-transparent to-transparent" />
                   <div className="absolute right-4 top-4 flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 px-3 py-1.5 text-xs text-slate-200 backdrop-blur-xl">
@@ -304,6 +315,22 @@ export default function ProjectSection({ projects }: { projects: Project[] }) {
                       </span>
                     </button>
                   </div>
+                ) : selectedProjectLogo ? (
+                  <button
+                    type="button"
+                    onClick={() => setLightboxImage(selectedProjectLogo)}
+                    className="group/logo relative flex min-h-64 items-center justify-center overflow-hidden rounded-[1.4rem] border border-white/10 bg-[radial-gradient(circle_at_center,rgba(103,232,249,0.10),rgba(15,23,42,0.72)_45%,rgba(2,6,23,0.95))] p-8 transition hover:border-cyan-300/40"
+                    aria-label={`Expand ${selectedProject.title} logo`}
+                  >
+                    <img
+                      src={selectedProjectLogo}
+                      alt={`${selectedProject.title} logo`}
+                      className="max-h-40 w-full max-w-md object-contain transition group-hover/logo:scale-[1.03]"
+                    />
+                    <span className="absolute bottom-4 right-4 rounded-full border border-white/10 bg-slate-950/70 px-3 py-1.5 text-xs font-medium text-slate-100 backdrop-blur-xl">
+                      Project logo
+                    </span>
+                  </button>
                 ) : null}
 
                 {selectedProject.videoUrl ? (
